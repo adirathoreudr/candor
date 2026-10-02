@@ -1,0 +1,19 @@
+[project]
+name = "candor"
+version = "0.1.0"
+description = "A memory over one person's work life that answers with time, attribution, sources, and knows when to say I don't know."
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.uv]
+# Not installed as a package: the code runs from src/ via PYTHONPATH (see Makefile).
+# Editable installs rely on .pth files, which macOS can flag hidden and Python then skips.
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
