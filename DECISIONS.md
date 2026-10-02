@@ -11,3 +11,7 @@ One row per decision. Evidence is measured unless marked otherwise.
 | 5 | Every LLM call: temperature 0, JSON output, cached by input hash, cache committed | live calls only | Reruns must match for the hidden-test re-check | settled |
 | 6 | Budget ₹0 | paid models | user constraint | settled |
 | 7 | Commit the provided data and harness unchanged | data path argument only | one-command run from a clean clone; organizer asked | pending organizer reply |
+| 8 | Unit ids, delivery times, deletes and edits reproduce `eval_harness/records.py` exactly | own interpretation of data/README | The scorer judges against that file; parity is a test, at every train `as_of` | settled |
+| 9 | Secrets redacted once at ingest, by credential shape (key prefixes, URL passwords, `*_PASSWORD=` style) | filter at answer time | Nothing downstream (index, prompts, answers) can leak what it never saw; prose like "email and password" untouched (test) | settled |
+| 10 | HTML comments removed at ingest and the unit flagged | keep as text | A reader never sees them; the planted instruction lives in one | settled |
+| 11 | Deletion events are never visible units | index them | They carry no content, only "message X was deleted" | settled |
