@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"answer\": \"No, Acme has not signed the contract yet. Sarah Patel said on Sep 16 they are reviewing the proposal with their CFO and will get back by Sep 25.\",\n  \"sources\": [\"EM-0916-ACME-ACK\", \"SL-F-0150\"],\n  \"abstained\": false\n}"
+}

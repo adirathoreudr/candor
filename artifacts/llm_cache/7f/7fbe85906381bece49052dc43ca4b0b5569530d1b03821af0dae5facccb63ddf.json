@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"You chose PostgreSQL with the PostGIS extension. You needed true spatial queries (nearest\u2011depot lookups, routes within a radius), which SQLite would struggle with without SpatiaLite, so you went with Postgres+PostGIS for its geography types, GiST indexes and production\u2011like setup.\",\"sources\":[\"MTG-0917-RECRUIT#0014\",\"CDX-0912\"],\"abstained\":false}"
+}
