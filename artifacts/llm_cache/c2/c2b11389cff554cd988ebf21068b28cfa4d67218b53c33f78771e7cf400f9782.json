@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Alex Rivera Sarah Patel pricing proposal\",\"Alex Rivera Sarah Patel proposal sent\",\"Alex Rivera Sarah Patel email proposal\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

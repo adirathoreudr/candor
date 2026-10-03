@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"board deck prep deadline\",\"board deck prep schedule\",\"board deck prep Alex Rivera\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

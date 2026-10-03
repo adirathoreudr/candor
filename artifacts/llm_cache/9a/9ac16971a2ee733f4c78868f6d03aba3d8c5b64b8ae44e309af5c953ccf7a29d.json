@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Marcus Webb Acme RouteWise heard\",\"Marcus Webb Acme RouteWise update\",\"Marcus Webb Acme RouteWise conversation\",\"Marcus Webb Acme RouteWise talk\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

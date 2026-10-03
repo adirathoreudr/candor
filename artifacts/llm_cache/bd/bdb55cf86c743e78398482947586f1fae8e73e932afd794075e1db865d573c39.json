@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"61 regression cases were passing on Sep\u202f16.\", \"sources\":[\"SL-RP-0916-1\",\"SL-EV-0916-EDIT1\"], \"abstained\":false}"
+}

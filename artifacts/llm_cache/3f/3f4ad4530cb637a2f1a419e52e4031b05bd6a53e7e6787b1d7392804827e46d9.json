@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Alex Rivera Friday standup format\",\"Alex Rivera Friday standup agenda\",\"Alex Rivera Friday standup preferences\",\"Alex Rivera Friday standup style\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

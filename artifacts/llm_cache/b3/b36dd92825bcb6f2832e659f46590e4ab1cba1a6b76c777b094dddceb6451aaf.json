@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"regression cases passing 2026-09-16\",\"regression test results Sep 16 2026\",\"pass count regression Sep 16\"],\"date_from\":\"2026-09-16\",\"date_to\":\"2026-09-16\",\"followup\":\"\"}"
+}

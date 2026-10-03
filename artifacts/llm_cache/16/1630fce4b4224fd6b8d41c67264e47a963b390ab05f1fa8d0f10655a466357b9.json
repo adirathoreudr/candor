@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Six days after the Acme call, I sent the pricing proposal.\", \"sources\":[\"EM-0915-ACME-PROP\",\"CAL-ACME-0909\"], \"abstained\":false}"
+}
