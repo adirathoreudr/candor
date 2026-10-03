@@ -14,3 +14,4 @@ __pycache__/
 .claude/settings.local.json
 Candor-Takehome.zip
 results/
+outbox/
