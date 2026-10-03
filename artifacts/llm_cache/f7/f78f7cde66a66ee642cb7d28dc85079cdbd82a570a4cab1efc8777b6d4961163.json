@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"gmail.send\",\"args\":{\"to\":[\"mike.dunn@harborlogistics.example.com\"],\"cc\":[],\"subject\":\"SOC 2 report availability\",\"body\":\"Hi Mike,\\n\\nWhen can you share your SOC 2 report?\\n\\nThanks,\\nAlex\"}}]}"
+}
