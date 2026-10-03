@@ -46,8 +46,8 @@ def tokenize(text: str) -> list[str]:
     return out
 
 
-def doc_text(u: Unit, text: str) -> str:
-    """What gets indexed: the content plus who, where and when, so 'what did Dana say on Slack' matches."""
+def doc_head(u: Unit) -> str:
+    """Who, where and when, so 'what did Dana say on Slack' matches. Indexed as its own field."""
     who = u.speaker or ("unidentified speaker" if u.author_kind == UNIDENTIFIED else "")
     when = u.time.strftime("%a %b %d %Y")
     head = f"{u.context}. {who}. {when}."
@@ -59,22 +59,54 @@ def doc_text(u: Unit, text: str) -> str:
                  f"attendees {', '.join(a['email'] for a in m['attendees'])}.")
     elif u.source == "dictation":
         head += f" Delivery: {m['delivery_state']}."
-    return f"{head}\n{text}"
+    return head
 
 
 @dataclass(frozen=True)
 class Doc:
     unit_id: str
-    text: str
+    head: str                     # who / where / when
+    body: str                     # what was said
     valid_from: datetime          # unit delivery time or edit time
     valid_to: datetime | None     # next edit time, exclusive
 
+    @property
+    def text(self) -> str:
+        return f"{self.head}\n{self.body}"
+
+
+class BM25:
+    """Okapi BM25 over pre-tokenized documents."""
+
+    def __init__(self, tokens: list[list[str]], k1: float = 1.5, b: float = 0.75):
+        self.tf = [Counter(t) for t in tokens]
+        dl = np.array([len(t) for t in tokens], dtype=float)
+        self.norm = k1 * (1 - b + b * dl / max(dl.mean(), 1e-9))
+        self.k1 = k1
+        df = Counter(term for t in tokens for term in set(t))
+        self.idf = {term: math.log(1 + (len(tokens) - f + 0.5) / (f + 0.5)) for term, f in df.items()}
+
+    def scores(self, query_terms: set[str]) -> np.ndarray:
+        out = np.zeros(len(self.tf))
+        for term in query_terms:
+            idf = self.idf.get(term)
+            if idf is None:
+                continue
+            tf = np.array([c.get(term, 0) for c in self.tf], dtype=float)
+            out += idf * tf * (self.k1 + 1) / (tf + self.norm)
+        return out
+
 
 class Index:
+    # The header (title, speaker, recipients) matches every record in a meeting or thread, so it
+    # counts for less than the content: otherwise "Yeah." outranks the decision because of its title.
+    HEAD_WEIGHT = 0.3
+
     def __init__(self, memory: Memory, embed_model: str = config.EMBED_MODEL):
         self.memory = memory
         self.docs = self._versions(memory)
-        self._bm25_build([tokenize(d.text) for d in self.docs])
+        self.body_bm25 = BM25([tokenize(d.body) for d in self.docs])
+        self.head_bm25 = BM25([tokenize(d.head) for d in self.docs])
         self.embed_model = embed_model
         self._embedder = None
         self.vectors = self._corpus_vectors()
@@ -90,28 +122,12 @@ class Index:
             texts = [u.text] + [t for _, t in history]
             for i, (start, text) in enumerate(zip(starts, texts)):
                 end = starts[i + 1] if i + 1 < len(starts) else None
-                docs.append(Doc(u.id, doc_text(u, text), start, end))
+                docs.append(Doc(u.id, doc_head(u), text, start, end))
         return docs
 
-    # BM25 (Okapi, k1=1.5, b=0.75)
-    def _bm25_build(self, tokens: list[list[str]]) -> None:
-        self.tf = [Counter(t) for t in tokens]
-        self.dl = np.array([len(t) for t in tokens], dtype=float)
-        self.avgdl = float(self.dl.mean())
-        df = Counter(term for t in tokens for term in set(t))
-        n = len(tokens)
-        self.idf = {term: math.log(1 + (n - f + 0.5) / (f + 0.5)) for term, f in df.items()}
-
-    def bm25(self, query: str, k1: float = 1.5, b: float = 0.75) -> np.ndarray:
-        scores = np.zeros(len(self.docs))
-        norm = k1 * (1 - b + b * self.dl / self.avgdl)
-        for term in set(tokenize(query)):
-            idf = self.idf.get(term)
-            if idf is None:
-                continue
-            tf = np.array([c.get(term, 0) for c in self.tf], dtype=float)
-            scores += idf * tf * (k1 + 1) / (tf + norm)
-        return scores
+    def bm25(self, query: str) -> np.ndarray:
+        terms = set(tokenize(query))
+        return self.body_bm25.scores(terms) + self.HEAD_WEIGHT * self.head_bm25.scores(terms)
 
     # Dense
     def _embedder_model(self):
