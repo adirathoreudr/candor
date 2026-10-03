@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Dana Lee owns the onboarding mockups. They are finished and available in Figma, as confirmed on September\u202f17 and reviewed by Alex on September\u202f18.\", \"sources\":[\"SL-DESIGN-0917-1\",\"SL-F-0013\",\"SL-F-0190\"], \"abstained\":false}"
+}
