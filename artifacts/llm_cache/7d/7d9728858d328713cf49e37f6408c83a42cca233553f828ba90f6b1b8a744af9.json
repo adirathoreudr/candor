@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Yes. On September 15 you emailed Sarah Patel the pricing proposal, as shown by the email record and confirmed by your Slack message that the proposal went out that afternoon.\", \"sources\": [\"EM-0915-ACME-PROP\",\"SL-F-0138\"], \"abstained\": false}"
+}

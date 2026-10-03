@@ -20,3 +20,8 @@ One row per decision. Evidence is measured unless marked otherwise.
 | 14 | LLM provider: Groq free tier, `openai/gpt-oss-120b` | NVIDIA NIM, Gemini 3.8 Flash | NIM account key never authenticated (401). Gemini free tier = 20 requests/day (measured 429). Groq free: 30 RPM, 1K RPD, 8K TPM, 200K TPD (published) | settled for now |
 | 15 | Daily-quota 429 stops the run with one clear message; per-minute 429 waits for `retry-after` | blind retries | Retrying a daily quota just burns time | settled |
 | 16 | Explicit `User-Agent` on LLM requests | urllib default | Groq's Cloudflare returns 403 "error code: 1010" for `Python-urllib` (measured) | settled |
+| 17 | P3 builds memory structure deterministically; LLM query planning and reranking move to P4 | LLM extraction pass over the whole corpus | Groq free tier is 200K tokens/day per model; one eval is ~49K. A full-corpus extraction (~150K input tokens) would cost a day of budget. Retrieval-only experiments cost 0 tokens and ~2 s each | settled |
+| 18 | Snowball stemming, addresses split into name parts | light suffix rules | +8.0 pts retrieval (measured) | settled |
+| 19 | Content and header as separate BM25 fields | one text field | +12.0 pts; flat across header weights 0.0 to 1.0, so the split matters, not the weight (measured) | settled |
+| 20 | Records with < 3 content terms rank after all others | no demotion | +4.0 pts; plateau at thresholds 3 to 5; no train evidence demoted (measured) | settled |
+| 21 | Link graph; ranking uses email-thread and dictation->sent links only, weight 0.3 | all links, weight 0.5 | +4.0 pts. Meeting->calendar links: 76.0%; Slack thread links: 80.0% (ablation, measured) | settled |

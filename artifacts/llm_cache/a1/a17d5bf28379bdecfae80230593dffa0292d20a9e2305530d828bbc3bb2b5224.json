@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"You\u2019re flying the night before the offsite, so the flight is Wednesday night (September\u202f23). There are no calendar entries recorded for September\u202f23.\", \"sources\":[\"CGPT-0917-DENVER#m3\",\"CAL-OFFSITE\"], \"abstained\":false}"
+}
