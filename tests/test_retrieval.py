@@ -3,9 +3,10 @@ from datetime import timedelta
 import pytest
 
 from candor import config
-from candor.index import Index, tokenize
+from candor.index import Index
 from candor.io import read_jsonl
 from candor.llm import parse_json
+from candor.text import tokenize
 
 
 @pytest.fixture(scope="session")
