@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"I don't know what you dictated to Sarah Patel on Sep\u202f10 because no record of a dictation to her on that date exists, so I cannot say whether it was sent.\", \"sources\": [], \"abstained\": true}"
+}

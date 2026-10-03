@@ -1,18 +1,33 @@
 """Command-line entrypoints. The Makefile wraps these; the hidden test calls `make run`."""
 import argparse
+import sys
+import time
+from datetime import datetime
 
 from candor.io import read_jsonl, write_jsonl
-
-
-def answer_question(q: dict) -> dict:
-    # Abstain-everything floor. Replaced by the retrieval + answer pipeline in P2.
-    return {"id": q["id"], "answer": "I don't know.", "sources": [], "retrieved": [], "abstained": True}
+from candor.pipeline import Candor
 
 
 def cmd_run(args: argparse.Namespace) -> None:
     questions = read_jsonl(args.questions)
-    write_jsonl(args.out, [answer_question(q) for q in questions])
-    print(f"wrote {len(questions)} answers to {args.out}")
+    started = time.time()
+    candor = Candor()
+    rows = []
+    for q in questions:
+        result = candor.ask(q["question"], datetime.fromisoformat(q["as_of"]))
+        rows.append({"id": q["id"], "answer": result["answer"], "sources": result["sources"],
+                     "retrieved": result["retrieved"], "abstained": result["abstained"]})
+    write_jsonl(args.out, rows)
+    print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.llm.usage.summary()}",
+          file=sys.stderr)
+
+
+def cmd_ask(args: argparse.Namespace) -> None:
+    candor = Candor()
+    result = candor.ask(args.question, datetime.fromisoformat(args.as_of))
+    print(result["answer"])
+    print("sources:", ", ".join(result["sources"]) or "none")
+    print("retrieved:", ", ".join(result["retrieved"][:10]))
 
 
 def main() -> None:
@@ -23,6 +38,11 @@ def main() -> None:
     run.add_argument("--questions", required=True)
     run.add_argument("--out", required=True)
     run.set_defaults(func=cmd_run)
+
+    ask = sub.add_parser("ask", help="answer one question")
+    ask.add_argument("question")
+    ask.add_argument("--as-of", required=True, help="ISO 8601 with offset, e.g. 2026-09-18T18:00:00-07:00")
+    ask.set_defaults(func=cmd_ask)
 
     args = p.parse_args()
     args.func(args)

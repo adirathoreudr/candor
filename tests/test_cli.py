@@ -11,7 +11,8 @@ def test_run_writes_one_answer_per_question(tmp_path):
     out = tmp_path / "answers.jsonl"
     subprocess.run([sys.executable, "-m", "candor.cli", "run",
                     "--questions", str(ROOT / "examples/memory_questions.example.jsonl"), "--out", str(out)],
-                   check=True, env={**os.environ, "PYTHONPATH": str(ROOT / "src")})
+                   # No key: tests never call a live LLM (retrieval still runs, answers abstain).
+                   check=True, env={**os.environ, "PYTHONPATH": str(ROOT / "src"), "LLM_API_KEY": ""})
     questions = [json.loads(l) for l in open(ROOT / "examples/memory_questions.example.jsonl")]
     answers = [json.loads(l) for l in open(out)]
     assert [a["id"] for a in answers] == [q["id"] for q in questions]

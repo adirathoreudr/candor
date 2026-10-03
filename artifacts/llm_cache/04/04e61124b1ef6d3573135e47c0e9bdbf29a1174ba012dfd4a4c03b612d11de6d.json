@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"You should follow up with Sarah Patel on September\u202f25,\u202f2026 if she hasn\u2019t replied.\", \"sources\":[\"DCT-0916-05\"], \"abstained\":false}"
+}

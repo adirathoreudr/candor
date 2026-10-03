@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Yes. You sent Sarah Patel the pricing proposal on September 15, and she confirmed receipt on September 16.\", \"sources\":[\"SL-F-0138\",\"EM-0916-ACME-ACK\"], \"abstained\":false}"
+}

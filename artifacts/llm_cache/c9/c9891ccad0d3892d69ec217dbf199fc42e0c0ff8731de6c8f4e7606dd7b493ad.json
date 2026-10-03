@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"I don't know; none of the records show Acme actually signing the contract.\", \"sources\":[\"DCT-0915-07\",\"MTG-0909-ACME#0126\",\"MTG-0909-ACME#0049\"], \"abstained\":true}"
+}
