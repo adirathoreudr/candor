@@ -11,39 +11,17 @@ Corpus embeddings are cached in artifacts/ keyed by model and text, so no model 
 """
 import hashlib
 import math
-import re
 import sys
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
 
 import numpy as np
-import Stemmer
 
-from candor import config
+from candor import config, links
 from candor.ingest import UNIDENTIFIED, Unit
 from candor.store import Memory
-
-_STOP = set("""a an the and or but if of to in on at by for with from as is are was were be been being it its this that
-these those i me my we our you your he she they them his her their what which who whom when where why how do does did
-done have has had not no so than too very can will would should could just about into over also any all some there here
-up down out then""".split())
-_TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.'][a-z0-9]+)*")
-_STEMMER = Stemmer.Stemmer("english")
-
-
-def tokenize(text: str) -> list[str]:
-    """Lowercase words, Snowball-stemmed, stopwords dropped. Dotted handles and email local parts
-    ("sarah.patel") also emit their parts, so a name matches the address it is written in."""
-    out = []
-    for tok in _TOKEN_RE.findall(text.lower().replace("'", "")):
-        if tok in _STOP:
-            continue
-        parts = tok.split(".")
-        out.append(tok if any(p.isdigit() for p in parts) else _STEMMER.stemWord(tok))
-        if len(parts) > 1 and not any(p.isdigit() for p in parts):
-            out.extend(_STEMMER.stemWord(p) for p in parts if p and p not in _STOP)
-    return out
+from candor.text import tokenize
 
 
 def doc_head(u: Unit) -> str:
@@ -104,9 +82,17 @@ class Index:
     # Records with fewer content words than this ("Yeah.", "Chris?", "Thanks, guys.") cannot be
     # evidence for anything; they rank after every record that has content.
     MIN_CONTENT_TERMS = 3
+    # Each of the top LINK_TOP records lifts its linked partners by LINK_WEIGHT x its own score (max,
+    # not sum). Only "same communication" links rank: an email thread, a dictation and what it became.
+    # Measured on train: meeting -> calendar links flood the ranking (one event per 100+ segments)
+    # and Slack thread links drift off topic in long threads; both lowered the score.
+    LINK_TOP = 10
+    LINK_WEIGHT = 0.3
+    RANKING_LINKS = {links.EMAIL_THREAD, links.DICTATION_SENT}
 
     def __init__(self, memory: Memory, embed_model: str = config.EMBED_MODEL):
         self.memory = memory
+        self.links = links.build(memory.corpus)
         self.docs = self._versions(memory)
         body_tokens = [tokenize(d.body) for d in self.docs]
         self.contentful = np.array([len(set(t)) >= self.MIN_CONTENT_TERMS for t in body_tokens])
@@ -178,6 +164,19 @@ class Index:
         return np.array([self.memory.is_visible(d.unit_id, as_of) and d.valid_from <= as_of
                          and (d.valid_to is None or as_of < d.valid_to) for d in self.docs])
 
+    def _link_bonus(self, fused: np.ndarray, visible: np.ndarray) -> np.ndarray:
+        bonus = np.zeros(len(self.docs))
+        if not self.LINK_WEIGHT:
+            return bonus
+        doc_of = {self.docs[i].unit_id: i for i in np.flatnonzero(visible)}   # one visible version per unit
+        ranked = [i for i in np.lexsort((-fused, ~self.contentful)) if visible[i] and fused[i] > 0]
+        for i in ranked[:self.LINK_TOP]:
+            for partner, kind in self.links.get(self.docs[i].unit_id, {}).items():
+                j = doc_of.get(partner) if kind in self.RANKING_LINKS else None
+                if j is not None:
+                    bonus[j] = max(bonus[j], self.LINK_WEIGHT * fused[i])
+        return bonus
+
     def search(self, query: str, as_of: datetime, k: int = 20, rrf_k: int = 60) -> list[tuple[str, float]]:
         """Visible unit ids ranked by fused BM25 + dense score, best first."""
         visible = self.mask(as_of)
@@ -186,6 +185,7 @@ class Index:
             order = [i for i in np.argsort(-scores, kind="stable") if visible[i]]
             for rank, i in enumerate(order):
                 fused[i] += 1.0 / (rrf_k + rank + 1)
+        fused = fused + self._link_bonus(fused, visible)
         out, seen = [], set()
         for i in np.lexsort((-fused, ~self.contentful)):   # contentful first, then by fused score
             if not visible[i] or fused[i] == 0:
