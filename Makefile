@@ -6,7 +6,7 @@ RESULTS   := results/$(shell git describe --always --dirty 2>/dev/null || echo n
 # nice: keep the laptop responsive while embeddings build
 PY        := PYTHONPATH=src nice -n 10 uv run --frozen python
 
-.PHONY: all run act eval eval-actions dev test setup check-uv
+.PHONY: all run act eval eval-actions dev dev-actions test setup check-uv
 
 ## Everything the hidden test needs: memory answers and action predictions
 all: run act
@@ -35,6 +35,11 @@ act: setup
 eval-actions: act
 	@mkdir -p $(RESULTS)
 	@$(PY) eval_harness/score_actions.py --gold $(COMMANDS) --predictions $(ACTIONS) --out $(RESULTS)/actions.json
+
+## Hidden-style action dev set, scored with the provided harness
+dev-actions: setup
+	@$(PY) -m candor.cli act --commands devset/actions_dev.jsonl --out outputs/dev/action_predictions.jsonl
+	@$(PY) eval_harness/score_actions.py --gold devset/actions_dev.jsonl --predictions outputs/dev/action_predictions.jsonl --out results/dev_actions.json
 
 ## Adversarial dev set (secrets, deletions, edits, planted instructions): answers then rule checks
 dev: setup

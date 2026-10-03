@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 from candor.io import read_jsonl, write_jsonl
+from candor.llm import LLMUnavailable
 from candor.pipeline import Candor
 
 
@@ -72,7 +73,11 @@ def main() -> None:
     do.set_defaults(func=cmd_do)
 
     args = p.parse_args()
-    args.func(args)
+    try:
+        args.func(args)
+    except LLMUnavailable as e:   # missing key or exhausted quota: one clear line, not a traceback
+        print(f"candor: {e}", file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

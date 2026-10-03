@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"actions\": [\n    {\n      \"type\": \"clarify\",\n      \"args\": {\n        \"question\": \"Sarah Patel does not have a Slack user ID in the directory. Should I send the message via email instead, or is there another Slack handle to use for her?\"\n      }\n    }\n  ]\n}"
+}

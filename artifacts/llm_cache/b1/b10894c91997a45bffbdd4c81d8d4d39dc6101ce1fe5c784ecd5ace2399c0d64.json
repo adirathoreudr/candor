@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"actions\": [\n    {\n      \"type\": \"slack.send_message\",\n      \"args\": {\n        \"to\": \"C11SALES\",\n        \"text\": \"Acme got the proposal. They're reviewing with their CFO and will get back to us by the 25th.\"\n      }\n    }\n  ]\n}"
+}
