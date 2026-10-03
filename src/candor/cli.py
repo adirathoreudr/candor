@@ -1,5 +1,6 @@
 """Command-line entrypoints. The Makefile wraps these; the hidden test calls `make run`."""
 import argparse
+import json
 import sys
 import time
 from datetime import datetime
@@ -20,6 +21,22 @@ def cmd_run(args: argparse.Namespace) -> None:
     write_jsonl(args.out, rows)
     print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.usage()}",
           file=sys.stderr)
+
+
+def cmd_act(args: argparse.Namespace) -> None:
+    commands = read_jsonl(args.commands)
+    started = time.time()
+    candor = Candor()
+    rows = [{"id": c["id"], "actions": candor.act(c["command"], datetime.fromisoformat(c["as_of"]))} for c in commands]
+    write_jsonl(args.out, rows)
+    print(f"wrote {len(rows)} action plans to {args.out} in {time.time() - started:.0f}s; {candor.usage()}",
+          file=sys.stderr)
+
+
+def cmd_do(args: argparse.Namespace) -> None:
+    candor = Candor()
+    for action in candor.act(args.command, datetime.fromisoformat(args.as_of)):
+        print(json.dumps(action, ensure_ascii=False))
 
 
 def cmd_ask(args: argparse.Namespace) -> None:
@@ -43,6 +60,16 @@ def main() -> None:
     ask.add_argument("question")
     ask.add_argument("--as-of", required=True, help="ISO 8601 with offset, e.g. 2026-09-18T18:00:00-07:00")
     ask.set_defaults(func=cmd_ask)
+
+    act = sub.add_parser("act", help="dry-run a JSONL file of commands into actions")
+    act.add_argument("--commands", required=True)
+    act.add_argument("--out", required=True)
+    act.set_defaults(func=cmd_act)
+
+    do = sub.add_parser("do", help="dry-run one command")
+    do.add_argument("command")
+    do.add_argument("--as-of", required=True, help="ISO 8601 with offset, e.g. 2026-09-18T09:00:00-07:00")
+    do.set_defaults(func=cmd_do)
 
     args = p.parse_args()
     args.func(args)
