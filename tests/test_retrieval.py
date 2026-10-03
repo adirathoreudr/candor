@@ -38,7 +38,12 @@ def test_search_ranks_unique_ids(index, train_as_ofs):
 
 
 def test_tokenize_keeps_numbers_and_drops_stopwords():
-    assert tokenize("The p95 latency is 1.8s for 64 cases") == ["p95", "latency", "1.8", "64", "case"]
+    assert tokenize("The p95 latency is 1.8s for 64 cases") == ["p95", "latenc", "1.8s", "64", "case"]
+
+
+def test_tokenize_stems_and_splits_addresses():
+    assert tokenize("dictated a dictation") == ["dictat", "dictat"]
+    assert {"sarah", "patel"} <= set(tokenize("to sarah.patel@acme.example.com"))
 
 
 def test_parse_json_tolerates_fences_and_reasoning():

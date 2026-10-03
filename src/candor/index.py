@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import numpy as np
+import Stemmer
 
 from candor import config
 from candor.ingest import UNIDENTIFIED, Unit
@@ -28,19 +29,21 @@ these those i me my we our you your he she they them his her their what which wh
 done have has had not no so than too very can will would should could just about into over also any all some there here
 up down out then""".split())
 _TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.'][a-z0-9]+)*")
-
-
-def _norm(tok: str) -> str:
-    tok = tok.replace("'", "")
-    if len(tok) > 4 and tok.endswith("ies"):
-        return tok[:-3] + "y"
-    if len(tok) > 3 and tok.endswith("s") and not tok.endswith("ss"):
-        return tok[:-1]
-    return tok
+_STEMMER = Stemmer.Stemmer("english")
 
 
 def tokenize(text: str) -> list[str]:
-    return [_norm(t) for t in _TOKEN_RE.findall(text.lower()) if t not in _STOP]
+    """Lowercase words, Snowball-stemmed, stopwords dropped. Dotted handles and email local parts
+    ("sarah.patel") also emit their parts, so a name matches the address it is written in."""
+    out = []
+    for tok in _TOKEN_RE.findall(text.lower().replace("'", "")):
+        if tok in _STOP:
+            continue
+        parts = tok.split(".")
+        out.append(tok if any(p.isdigit() for p in parts) else _STEMMER.stemWord(tok))
+        if len(parts) > 1 and not any(p.isdigit() for p in parts):
+            out.extend(_STEMMER.stemWord(p) for p in parts if p and p not in _STOP)
+    return out
 
 
 def doc_text(u: Unit, text: str) -> str:
