@@ -6,7 +6,7 @@ RESULTS   := results/$(shell git describe --always --dirty 2>/dev/null || echo n
 # nice: keep the laptop responsive while embeddings build
 PY        := PYTHONPATH=src nice -n 10 uv run --frozen python
 
-.PHONY: all run act eval eval-actions dev dev-actions assistant voice test setup check-uv
+.PHONY: all run act eval eval-actions dev dev-actions ask assistant voice test setup check-uv
 
 ## Everything the hidden test needs: memory answers and action predictions
 all: run act
@@ -35,6 +35,10 @@ act: setup
 eval-actions: act
 	@mkdir -p $(RESULTS)
 	@$(PY) eval_harness/score_actions.py --gold $(COMMANDS) --predictions $(ACTIONS) --out $(RESULTS)/actions.json
+
+## One question: make ask Q="When is the launch?" AS_OF=2026-09-18T18:00:00-07:00 (AS_OF defaults to end of data)
+ask: setup
+	@$(PY) -m candor.cli ask "$(Q)" $(if $(AS_OF),--as-of $(AS_OF))
 
 ## Interactive assistant: text REPL, or push-to-talk voice. Dry run unless EXECUTE=1 (sandbox outbox/ only)
 assistant: setup

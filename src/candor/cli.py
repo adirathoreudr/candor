@@ -80,7 +80,7 @@ def cmd_assistant(args: argparse.Namespace) -> None:
 
 def cmd_ask(args: argparse.Namespace) -> None:
     candor = Candor()
-    result = candor.ask(args.question, datetime.fromisoformat(args.as_of))
+    result = candor.ask(args.question, datetime.fromisoformat(args.as_of) if args.as_of else candor.data_end)
     print(result["answer"])
     print("sources:", ", ".join(result["sources"]) or "none")
     print("retrieved:", ", ".join(result["retrieved"][:10]))
@@ -97,7 +97,7 @@ def main() -> None:
 
     ask = sub.add_parser("ask", help="answer one question")
     ask.add_argument("question")
-    ask.add_argument("--as-of", required=True, help="ISO 8601 with offset, e.g. 2026-09-18T18:00:00-07:00")
+    ask.add_argument("--as-of", help="ISO 8601 with offset, e.g. 2026-09-18T18:00:00-07:00; default: end of the data")
     ask.set_defaults(func=cmd_ask)
 
     act = sub.add_parser("act", help="dry-run a JSONL file of commands into actions")
