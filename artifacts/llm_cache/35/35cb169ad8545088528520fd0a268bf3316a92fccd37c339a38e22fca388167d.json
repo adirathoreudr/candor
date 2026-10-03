@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"No, you no longer owe Marcus a Harbor demo environment; the need was cancelled after Harbor pushed the demo to October.\", \"sources\": [\"SL-DM-AM-0911-1\",\"SL-F-0084\"], \"abstained\": false}"
+}

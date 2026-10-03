@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"You chose Postgres with PostGIS, since it offers built\u2011in spatial indexing and queries needed for nearest\u2011depot and distance\u2011based route lookups, matching the prototype\u2019s spatial requirements.\", \"sources\": [\"MTG-0917-RECRUIT#0014\",\"CDX-0912\"], \"abstained\": false}"
+}
