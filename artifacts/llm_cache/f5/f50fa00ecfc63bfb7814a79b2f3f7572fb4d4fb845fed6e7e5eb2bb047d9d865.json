@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"No. Marcus said on Sep\u202f11 that Harbor pushed the demo to October, so the demo environment isn\u2019t needed any longer.\", \"sources\":[\"SL-DM-AM-0911-1\",\"SL-F-0084\"], \"abstained\":false}"
+}

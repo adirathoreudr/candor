@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"regression test plan Sarah Kim landed\",\"regression test plan Priya Nair completed\",\"regression test plan landed deployment\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

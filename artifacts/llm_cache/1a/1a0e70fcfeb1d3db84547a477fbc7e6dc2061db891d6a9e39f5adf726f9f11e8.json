@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"The p95 routing latency is 1.8\u202fseconds.\", \"sources\":[\"MTG-0916-GONOGO#0051\"], \"abstained\":false}"
+}

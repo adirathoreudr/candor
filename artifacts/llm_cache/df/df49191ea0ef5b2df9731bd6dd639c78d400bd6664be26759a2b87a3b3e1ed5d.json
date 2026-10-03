@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"answer\": \"Yes. You emailed Sarah Patel the pricing proposal on September 15, 2026, and Slack confirms it went out that afternoon.\",\n  \"sources\": [\"EM-0915-ACME-PROP\", \"SL-F-0138\"],\n  \"abstained\": false\n}"
+}

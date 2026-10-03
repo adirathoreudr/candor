@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Your flight to Denver departs San Francisco at 6:10\u202fPM on Wednesday, September\u202f23,\u202f2026.\", \"sources\": [\"EM-0912-FLIGHT\"], \"abstained\": false}"
+}

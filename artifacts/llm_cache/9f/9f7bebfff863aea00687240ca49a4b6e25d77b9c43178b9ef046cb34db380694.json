@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Sarah Patel emails PipelinePilot review\",\"forward Sarah Patel emails PipelinePilot\",\"PipelinePilot review policy email forwarding\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

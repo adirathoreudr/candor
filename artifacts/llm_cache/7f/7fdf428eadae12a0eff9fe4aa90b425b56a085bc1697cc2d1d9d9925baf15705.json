@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Acme Freight pricing proposal\",\"Acme Freight quote\",\"Acme Freight rate\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

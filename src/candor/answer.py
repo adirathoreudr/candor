@@ -5,7 +5,7 @@ from candor import config
 from candor.ingest import ASSISTANT, BOT, UNIDENTIFIED, Unit
 from candor.llm import LLM
 
-PROMPT_VERSION = "answer.v1"
+PROMPT_VERSION = "answer.v2"
 MAX_CHARS = {"codex": 2500}
 DEFAULT_MAX_CHARS = 1200
 
@@ -17,9 +17,9 @@ def _speaker(u: Unit) -> str:
     return f"{u.speaker}{role}"
 
 
-def format_record(u: Unit) -> str:
+def format_record(u: Unit, limit: int | None = None) -> str:
     text = u.text
-    limit = MAX_CHARS.get(u.source, DEFAULT_MAX_CHARS)
+    limit = limit or MAX_CHARS.get(u.source, DEFAULT_MAX_CHARS)
     if len(text) > limit:
         text = text[:limit] + " [...]"
     m, extra = u.meta, ""

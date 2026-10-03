@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Marcus Webb demo environment Harbor\",\"Harbor demo environment owed\",\"demo environment Harbor Marcus\",\"Harbor demo owed Marcus\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}
