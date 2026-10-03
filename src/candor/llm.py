@@ -123,6 +123,7 @@ class LLM:
                     if long_wait or ("quota" in detail.lower() and "per day" in detail.lower()) \
                             or re.search(r"retry in \d+h", detail):
                         # A daily quota does not come back within any sane retry window: stop now, say why.
+                        detail = re.sub(r" in organization `[^`]*`", "", detail)   # keep account ids off screen
                         reason = re.search(r"(Quota exceeded|Rate limit reached)[^\n\"]{0,200}", detail)
                         raise LLMUnavailable(f"LLM quota exhausted for {self.model}"
                                              f"{f' (frees in {float(after) / 60:.0f} min)' if long_wait else ''}: "
