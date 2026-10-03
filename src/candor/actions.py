@@ -7,11 +7,12 @@ The LLM proposes actions in human terms; code makes them exact:
 - anything that cannot be resolved becomes a `clarify` instead of a guess,
 - only the nine action types of the interface ever leave this module.
 """
+import re
 from datetime import datetime, timedelta
 
 from candor import config
 from candor.answer import format_record
-from candor.calendar import LOCAL, occurs_between
+from candor.calendar import LOCAL, occurs_between, occurs_on
 from candor.index import Index
 from candor.ingest import Corpus
 from candor.llm import LLM
@@ -93,7 +94,37 @@ def _as_list(value) -> list:
     return value if isinstance(value, list) else [value]
 
 
-def normalize(raw: list[dict], directory: Directory, events: dict) -> list[dict]:
+_WEEKDAY_RE = re.compile(r"\b(last\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)s?\b", re.I)
+_WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
+
+def _align_weekday(kind: str, args: dict, command: str, as_of: datetime | None) -> None:
+    """If the command names exactly one weekday ("Monday at 10", "my Friday focus block") and the
+    planned time falls on another weekday, move it to the next such day. LLMs slip on weekday
+    arithmetic; this check is deterministic. "last Monday" (past) is left alone."""
+    keys = {"calendar.create_event": ("start", "end"), "calendar.update_event": ("start", "end"),
+            "reminder.create": ("due",)}.get(kind)
+    named = {m.group(2).lower() for m in _WEEKDAY_RE.finditer(command or "") if not m.group(1)}
+    if not keys or not as_of or len(named) != 1 or not args.get(keys[0]):
+        return
+    target = _WEEKDAYS.index(named.pop())
+    planned = datetime.fromisoformat(args[keys[0]])
+    today = as_of.astimezone(LOCAL).date()
+    if planned.weekday() == target and planned.date() >= today:
+        return   # right weekday, not in the past: leave it (this week or a later one are both readings)
+    day = today + timedelta(days=(target - today.weekday()) % 7)
+    candidate = datetime.combine(day, planned.timetz())
+    if candidate < as_of:
+        day += timedelta(days=7)
+    shift = day - planned.date()
+    for key in keys:
+        if args.get(key):
+            moved = datetime.fromisoformat(args[key]) + shift
+            args[key] = _local(moved.replace(tzinfo=None))   # same wall-clock time, offset recomputed (DST)
+
+
+def normalize(raw: list[dict], directory: Directory, events: dict, command: str = "",
+              as_of: datetime | None = None) -> list[dict]:
     out = []
     for action in raw if isinstance(raw, list) else []:
         kind, args = action.get("type"), dict(action.get("args") or {})
@@ -124,6 +155,7 @@ def normalize(raw: list[dict], directory: Directory, events: dict) -> list[dict]
                     args["end"] = (datetime.fromisoformat(args["start"]) + length).isoformat(timespec="seconds")
             elif kind == "reminder.create":
                 args["due"] = _local(args["due"])
+            _align_weekday(kind, args, command, as_of)
         except Unresolved as e:
             kind, args = "clarify", {"question": str(e)}
         except (KeyError, TypeError, ValueError) as e:
@@ -150,6 +182,21 @@ def _events(memory: Memory, as_of: datetime) -> dict[str, dict]:
             if u.source == "calendar" and u.meta["status"] != "cancelled" and occurs_between(u.meta, lo, hi)}
 
 
+def _event_line(event_id: str, m: dict, as_of: datetime) -> str:
+    """One event for the prompt. A recurring event shows its next occurrence, not the series start,
+    so "move my Friday block" lands on the coming Friday."""
+    when = f"{m['start']} - {m['end']}"
+    if m.get("recurrence"):
+        today = as_of.astimezone(LOCAL).date()
+        day = next((today + timedelta(days=k) for k in range(DAYS_AHEAD + 1)
+                    if occurs_on(m, today + timedelta(days=k))), None)
+        if day:
+            start, end = datetime.fromisoformat(m["start"]), datetime.fromisoformat(m["end"])
+            when = (f"next {day.isoformat()} {start.astimezone(LOCAL):%H:%M} - {end.astimezone(LOCAL):%H:%M}, "
+                    f"repeats {';'.join(m['recurrence'])}")
+    return f"- {event_id} | {m['summary']} | {when} | {', '.join(a['email'] for a in m['attendees'])}"
+
+
 def plan_actions(llm: LLM, memory: Memory, index: Index, directory: Directory, people: list[Person],
                  command: str, as_of: datetime) -> list[dict]:
     events = _events(memory, as_of)
@@ -160,9 +207,7 @@ def plan_actions(llm: LLM, memory: Memory, index: Index, directory: Directory, p
         days=_days(as_of),
         people="\n".join(f"- {p.describe()}" for p in people if p.name != memory.corpus.owner),
         channels=directory.describe_channels(),
-        events="\n".join(f"- {eid} | {m['summary']} | {m['start']} - {m['end']}"
-                         f"{' | repeats ' + ';'.join(m['recurrence']) if m.get('recurrence') else ''}"
-                         f" | {', '.join(a['email'] for a in m['attendees'])}" for eid, m in sorted(events.items())),
+        events="\n".join(_event_line(eid, m, as_of) for eid, m in sorted(events.items())),
         records="\n".join(format_record(u, 400) for u in evidence) or "(none)")
     out = llm.complete_json("You are a careful assistant that replies with a single JSON object.", prompt)
-    return normalize(out.get("actions") or [], directory, events)
+    return normalize(out.get("actions") or [], directory, events, command, as_of)
