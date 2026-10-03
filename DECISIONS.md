@@ -25,3 +25,9 @@ One row per decision. Evidence is measured unless marked otherwise.
 | 19 | Content and header as separate BM25 fields | one text field | +12.0 pts; flat across header weights 0.0 to 1.0, so the split matters, not the weight (measured) | settled |
 | 20 | Records with < 3 content terms rank after all others | no demotion | +4.0 pts; plateau at thresholds 3 to 5; no train evidence demoted (measured) | settled |
 | 21 | Link graph; ranking uses email-thread and dictation->sent links only, weight 0.3 | all links, weight 0.5 | +4.0 pts. Meeting->calendar links: 76.0%; Slack thread links: 80.0% (ablation, measured) | settled |
+| 22 | LLM query planner: rewrites, date window, optional second hop | question-only search | Alone: retrieval flat at 88.0% but top-5 coverage 68% -> 84%; fixes date-bound and two-hop questions (measured) | settled |
+| 23 | Date window list weighted 3x in fusion; calendar events count on the days they occur | window as one more list | At 1x the board meeting on the flight day ranked 40th (measured) | settled |
+| 24 | LLM reranker over top 30 + linked records of the top 10; unpicked keep fused order | no rerank; rerank that drops | Retrieval 88.0% -> 96.0%, MRR 0.569 -> 0.900 (measured). Demote-never-drop keeps a judge mistake recoverable | settled |
+| 25 | One model per role: plan gpt-oss-20b, rerank qwen3.8-27b, answer gpt-oss-120b (Groq) | one model | Each has its own 200K tokens/day free quota; one full eval spends ~30K / ~85K / ~50K | settled |
+| 26 | answer.v2: a status short of the asked state is an answer; separate first-hand from reported speech; give each side's reason | answer.v1 | Answers 81.5% -> 96.3% (measured) | settled |
+| 27 | Adversarial dev set checked by rules, not gold answers | train set only | Train has one injection question and no secret, deletion or edit-boundary questions; rule checks cannot be tuned against | settled |
