@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"I don't know if Acme has signed the contract; the latest record says they are reviewing the proposal with their CFO and will get back by the 25th, with no signing indicated.\", \"sources\":[\"SL-F-0150\"], \"abstained\":true}"
+}

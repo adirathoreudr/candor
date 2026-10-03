@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Marcus Webb says Harbor Logistics is expected to sign in Q4\u202f2026 (mid\u2011November or December), while John Okafor believes they will not sign this year. The two sources disagree.\", \"sources\":[\"SL-SALES-0917-1\",\"MTG-0915-SALESPIPE#0040\",\"SL-SALES-0911-1\",\"SL-DM-JA-0914-1\"], \"abstained\":false}"
+}
