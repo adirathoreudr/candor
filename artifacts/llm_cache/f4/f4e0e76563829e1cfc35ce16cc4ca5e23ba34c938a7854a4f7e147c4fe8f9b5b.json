@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"September 30\", \"sources\":[\"MTG-0908-PLAN#0069\",\"MTG-0908-PLAN#0140\"], \"abstained\":false}"
+}

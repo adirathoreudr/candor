@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Board deck prep is scheduled for Friday, September\u202f18,\u202f2026, 10\u202fam\u202f\u2013\u202f11\u202fam Pacific Time (Los\u202fAngeles).\",\"sources\":[\"EM-0915-CAL-UPD\",\"CAL-BOARDPREP\",\"SL-F-0128\"],\"abstained\":false}"
+}

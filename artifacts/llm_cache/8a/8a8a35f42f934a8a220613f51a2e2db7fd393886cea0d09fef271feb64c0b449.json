@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Priya\u202fNair wrote and is executing the regression test plan. She posted the 64\u2011case plan to Notion on September\u202f11, and the run has finished \u2013 61 passed and three non\u2011blocking failures were reported.\", \"sources\":[\"SL-RP-0911-1\",\"EM-F-019\",\"MTG-0916-GONOGO#0026\",\"SL-F-0187\"], \"abstained\":false}"
+}

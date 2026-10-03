@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Some team members expect a sign this year\u2014Marcus Webb says they\u2019ll close in Q4, possibly mid\u2011November or December\u2014while John Okafor doubts any signing this year.\", \"sources\": [\"SL-SALES-0911-1\", \"MTG-0915-SALESPIPE#0040\", \"SL-DM-JA-0914-1\"], \"abstained\": false}"
+}
