@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"launch slipped September 30\",\"launch delayed September 30\",\"launch date change September 30\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

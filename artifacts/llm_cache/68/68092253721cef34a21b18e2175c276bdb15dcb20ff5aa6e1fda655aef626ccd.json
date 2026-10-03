@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"p95 routing latency\",\"routing latency p95\",\"95th percentile routing latency\",\"routing latency metrics\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

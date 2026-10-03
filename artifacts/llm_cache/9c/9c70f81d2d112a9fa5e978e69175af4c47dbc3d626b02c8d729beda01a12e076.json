@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Sarah Kim SSO\",\"Sarah Kim single sign-on\",\"Sarah Kim SSO comment\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

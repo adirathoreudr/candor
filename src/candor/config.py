@@ -36,4 +36,8 @@ os.environ.setdefault("OMP_NUM_THREADS", str(EMBED_THREADS))
 LLM_BACKEND = os.environ.get("LLM_BACKEND", "openai")      # openai | claude-cli
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "").rstrip("/")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
-LLM_MODEL = os.environ.get("LLM_MODEL", "")
+LLM_MODEL = os.environ.get("LLM_MODEL", "")                         # answers
+# Optional per-role models. On free tiers each model has its own daily quota, so splitting roles
+# across models multiplies the budget. Unset means the answer model does everything.
+LLM_MODEL_PLAN = os.environ.get("LLM_MODEL_PLAN", "") or LLM_MODEL
+LLM_MODEL_RERANK = os.environ.get("LLM_MODEL_RERANK", "") or LLM_MODEL

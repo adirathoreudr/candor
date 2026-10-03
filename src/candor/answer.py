@@ -17,9 +17,9 @@ def _speaker(u: Unit) -> str:
     return f"{u.speaker}{role}"
 
 
-def format_record(u: Unit) -> str:
+def format_record(u: Unit, limit: int | None = None) -> str:
     text = u.text
-    limit = MAX_CHARS.get(u.source, DEFAULT_MAX_CHARS)
+    limit = limit or MAX_CHARS.get(u.source, DEFAULT_MAX_CHARS)
     if len(text) > limit:
         text = text[:limit] + " [...]"
     m, extra = u.meta, ""

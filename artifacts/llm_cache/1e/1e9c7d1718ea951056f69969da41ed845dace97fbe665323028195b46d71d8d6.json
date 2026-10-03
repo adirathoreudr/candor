@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"John agreed cut dark mode\",\"John dark mode cut\",\"John agreed to remove dark mode\",\"John dark mode decision\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "qwen/qwen3.8-27b",
+ "reply": "{\n\"ranked\": [\n\"EM-0912-FLIGHT\",\n\"MTG-0917-RECRUIT#0042\",\n\"CGPT-0917-DENVER#m3\"\n]\n}"
+}
