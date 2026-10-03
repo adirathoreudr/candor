@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"On September\u202f23 you have a Board run\u2011through 7:30\u202f\u2013\u202f8:30\u202fAM and the Brightline Q3 board meeting 9:00\u202f\u2013\u202f12:00\u202fPM (both confirmed). Your United flight departs SFO at 6:10\u202fPM that evening.\", \"sources\":[\"CAL-F-25\",\"CAL-BOARD\"], \"abstained\":false}"
+}

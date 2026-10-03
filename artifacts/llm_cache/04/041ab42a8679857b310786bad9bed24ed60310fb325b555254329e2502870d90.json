@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"The records show conflicting expectations: John Okafor said on Sep\u202f14 he doesn\u2019t think Harbor will sign this year; Marcus Webb said on Sep\u202f11 and Sep\u202f17 he expects a Q4 signing this year. No definitive decision is recorded.\", \"sources\":[\"SL-DM-JA-0914-1\",\"SL-SALES-0917-1\",\"SL-SALES-0911-1\"], \"abstained\":false}"
+}

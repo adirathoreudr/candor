@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"On Sep\u202f10 you dictated a message to Sarah Patel saying, \u201cHi Sarah, quick heads up on the pricing proposal I promised for Friday. Could I have until Tuesday the 15th? I\u2019d like to add volume tiers for when Acme Freight grows past 500 vehicles, since you mentioned getting to around 550 by spring.\u201d The dictation\u2019s delivery state was \u201csent,\u201d so it went out.\",\"sources\":[\"DCT-0910-02\",\"EM-0910-ACME-EXT\"],\"abstained\":false}"
+}

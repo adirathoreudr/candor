@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Follow up on September\u202f25, but only if Sarah hasn't replied by then.\", \"sources\": [\"DCT-0916-05\", \"EM-0916-ACME-ACK\"], \"abstained\": false}"
+}
