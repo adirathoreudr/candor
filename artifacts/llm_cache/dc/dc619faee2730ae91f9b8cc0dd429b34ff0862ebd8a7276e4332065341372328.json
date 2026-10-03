@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"answer\": \"I don't know why the launch slipped; the records only note that the go/no\u2011go outcome moved the date to Oct\u202f21 without giving a reason.\",\n  \"sources\": [\"SL-F-0159\", \"SL-F-0166\"],\n  \"abstained\": true\n}"
+}

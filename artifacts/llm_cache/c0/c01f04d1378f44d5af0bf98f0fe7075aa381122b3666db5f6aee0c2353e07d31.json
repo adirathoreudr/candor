@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Your flight to Denver departs from San Francisco (SFO) at 6:10\u202fPM on September\u202f23,\u202f2026.\", \"sources\":[\"EM-0912-FLIGHT\"], \"abstained\":false}"
+}

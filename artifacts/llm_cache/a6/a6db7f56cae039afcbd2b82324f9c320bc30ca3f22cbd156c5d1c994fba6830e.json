@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"We\u2019re not hiring a second designer yet. Alex said the request will only open after the Series\u202fA extension closes, which Tom expects by the end of October.\", \"sources\":[\"EM-0917-LEAH-R\",\"MTG-0910-1ON1#0053\",\"MTG-0910-1ON1#0051\"], \"abstained\":false}"
+}

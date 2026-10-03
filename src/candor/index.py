@@ -11,7 +11,6 @@ Corpus embeddings are cached in artifacts/ keyed by model and text, so no model 
 """
 import hashlib
 import math
-import re
 import sys
 from collections import Counter
 from dataclasses import dataclass
@@ -19,32 +18,14 @@ from datetime import datetime
 
 import numpy as np
 
-from candor import config
+from candor import config, links
 from candor.ingest import UNIDENTIFIED, Unit
 from candor.store import Memory
-
-_STOP = set("""a an the and or but if of to in on at by for with from as is are was were be been being it its this that
-these those i me my we our you your he she they them his her their what which who whom when where why how do does did
-done have has had not no so than too very can will would should could just about into over also any all some there here
-up down out then""".split())
-_TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.'][a-z0-9]+)*")
+from candor.text import tokenize
 
 
-def _norm(tok: str) -> str:
-    tok = tok.replace("'", "")
-    if len(tok) > 4 and tok.endswith("ies"):
-        return tok[:-3] + "y"
-    if len(tok) > 3 and tok.endswith("s") and not tok.endswith("ss"):
-        return tok[:-1]
-    return tok
-
-
-def tokenize(text: str) -> list[str]:
-    return [_norm(t) for t in _TOKEN_RE.findall(text.lower()) if t not in _STOP]
-
-
-def doc_text(u: Unit, text: str) -> str:
-    """What gets indexed: the content plus who, where and when, so 'what did Dana say on Slack' matches."""
+def doc_head(u: Unit) -> str:
+    """Who, where and when, so 'what did Dana say on Slack' matches. Indexed as its own field."""
     who = u.speaker or ("unidentified speaker" if u.author_kind == UNIDENTIFIED else "")
     when = u.time.strftime("%a %b %d %Y")
     head = f"{u.context}. {who}. {when}."
@@ -56,22 +37,67 @@ def doc_text(u: Unit, text: str) -> str:
                  f"attendees {', '.join(a['email'] for a in m['attendees'])}.")
     elif u.source == "dictation":
         head += f" Delivery: {m['delivery_state']}."
-    return f"{head}\n{text}"
+    return head
 
 
 @dataclass(frozen=True)
 class Doc:
     unit_id: str
-    text: str
+    head: str                     # who / where / when
+    body: str                     # what was said
     valid_from: datetime          # unit delivery time or edit time
     valid_to: datetime | None     # next edit time, exclusive
 
+    @property
+    def text(self) -> str:
+        return f"{self.head}\n{self.body}"
+
+
+class BM25:
+    """Okapi BM25 over pre-tokenized documents."""
+
+    def __init__(self, tokens: list[list[str]], k1: float = 1.5, b: float = 0.75):
+        self.tf = [Counter(t) for t in tokens]
+        dl = np.array([len(t) for t in tokens], dtype=float)
+        self.norm = k1 * (1 - b + b * dl / max(dl.mean(), 1e-9))
+        self.k1 = k1
+        df = Counter(term for t in tokens for term in set(t))
+        self.idf = {term: math.log(1 + (len(tokens) - f + 0.5) / (f + 0.5)) for term, f in df.items()}
+
+    def scores(self, query_terms: set[str]) -> np.ndarray:
+        out = np.zeros(len(self.tf))
+        for term in query_terms:
+            idf = self.idf.get(term)
+            if idf is None:
+                continue
+            tf = np.array([c.get(term, 0) for c in self.tf], dtype=float)
+            out += idf * tf * (self.k1 + 1) / (tf + self.norm)
+        return out
+
 
 class Index:
+    # The header (title, speaker, recipients) matches every record in a meeting or thread, so it
+    # counts for less than the content: otherwise "Yeah." outranks the decision because of its title.
+    HEAD_WEIGHT = 0.3
+    # Records with fewer content words than this ("Yeah.", "Chris?", "Thanks, guys.") cannot be
+    # evidence for anything; they rank after every record that has content.
+    MIN_CONTENT_TERMS = 3
+    # Each of the top LINK_TOP records lifts its linked partners by LINK_WEIGHT x its own score (max,
+    # not sum). Only "same communication" links rank: an email thread, a dictation and what it became.
+    # Measured on train: meeting -> calendar links flood the ranking (one event per 100+ segments)
+    # and Slack thread links drift off topic in long threads; both lowered the score.
+    LINK_TOP = 10
+    LINK_WEIGHT = 0.3
+    RANKING_LINKS = {links.EMAIL_THREAD, links.DICTATION_SENT}
+
     def __init__(self, memory: Memory, embed_model: str = config.EMBED_MODEL):
         self.memory = memory
+        self.links = links.build(memory.corpus)
         self.docs = self._versions(memory)
-        self._bm25_build([tokenize(d.text) for d in self.docs])
+        body_tokens = [tokenize(d.body) for d in self.docs]
+        self.contentful = np.array([len(set(t)) >= self.MIN_CONTENT_TERMS for t in body_tokens])
+        self.body_bm25 = BM25(body_tokens)
+        self.head_bm25 = BM25([tokenize(d.head) for d in self.docs])
         self.embed_model = embed_model
         self._embedder = None
         self.vectors = self._corpus_vectors()
@@ -87,28 +113,12 @@ class Index:
             texts = [u.text] + [t for _, t in history]
             for i, (start, text) in enumerate(zip(starts, texts)):
                 end = starts[i + 1] if i + 1 < len(starts) else None
-                docs.append(Doc(u.id, doc_text(u, text), start, end))
+                docs.append(Doc(u.id, doc_head(u), text, start, end))
         return docs
 
-    # BM25 (Okapi, k1=1.5, b=0.75)
-    def _bm25_build(self, tokens: list[list[str]]) -> None:
-        self.tf = [Counter(t) for t in tokens]
-        self.dl = np.array([len(t) for t in tokens], dtype=float)
-        self.avgdl = float(self.dl.mean())
-        df = Counter(term for t in tokens for term in set(t))
-        n = len(tokens)
-        self.idf = {term: math.log(1 + (n - f + 0.5) / (f + 0.5)) for term, f in df.items()}
-
-    def bm25(self, query: str, k1: float = 1.5, b: float = 0.75) -> np.ndarray:
-        scores = np.zeros(len(self.docs))
-        norm = k1 * (1 - b + b * self.dl / self.avgdl)
-        for term in set(tokenize(query)):
-            idf = self.idf.get(term)
-            if idf is None:
-                continue
-            tf = np.array([c.get(term, 0) for c in self.tf], dtype=float)
-            scores += idf * tf * (k1 + 1) / (tf + norm)
-        return scores
+    def bm25(self, query: str) -> np.ndarray:
+        terms = set(tokenize(query))
+        return self.body_bm25.scores(terms) + self.HEAD_WEIGHT * self.head_bm25.scores(terms)
 
     # Dense
     def _embedder_model(self):
@@ -154,6 +164,19 @@ class Index:
         return np.array([self.memory.is_visible(d.unit_id, as_of) and d.valid_from <= as_of
                          and (d.valid_to is None or as_of < d.valid_to) for d in self.docs])
 
+    def _link_bonus(self, fused: np.ndarray, visible: np.ndarray) -> np.ndarray:
+        bonus = np.zeros(len(self.docs))
+        if not self.LINK_WEIGHT:
+            return bonus
+        doc_of = {self.docs[i].unit_id: i for i in np.flatnonzero(visible)}   # one visible version per unit
+        ranked = [i for i in np.lexsort((-fused, ~self.contentful)) if visible[i] and fused[i] > 0]
+        for i in ranked[:self.LINK_TOP]:
+            for partner, kind in self.links.get(self.docs[i].unit_id, {}).items():
+                j = doc_of.get(partner) if kind in self.RANKING_LINKS else None
+                if j is not None:
+                    bonus[j] = max(bonus[j], self.LINK_WEIGHT * fused[i])
+        return bonus
+
     def search(self, query: str, as_of: datetime, k: int = 20, rrf_k: int = 60) -> list[tuple[str, float]]:
         """Visible unit ids ranked by fused BM25 + dense score, best first."""
         visible = self.mask(as_of)
@@ -162,8 +185,9 @@ class Index:
             order = [i for i in np.argsort(-scores, kind="stable") if visible[i]]
             for rank, i in enumerate(order):
                 fused[i] += 1.0 / (rrf_k + rank + 1)
+        fused = fused + self._link_bonus(fused, visible)
         out, seen = [], set()
-        for i in np.argsort(-fused, kind="stable"):
+        for i in np.lexsort((-fused, ~self.contentful)):   # contentful first, then by fused score
             if not visible[i] or fused[i] == 0:
                 continue
             uid = self.docs[i].unit_id
