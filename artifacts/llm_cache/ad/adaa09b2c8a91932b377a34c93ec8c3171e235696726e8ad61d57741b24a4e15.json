@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"calendar.update_event\",\"args\":{\"event_id\":\"CAL-BOARDPREP\",\"start\":\"2026-09-18T15:00\",\"end\":\"2026-09-18T16:00\"}}]}"
+}

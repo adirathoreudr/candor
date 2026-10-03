@@ -22,6 +22,9 @@ from dataclasses import dataclass, field
 from candor import config
 
 
+MAX_RETRY_WAIT = 120   # seconds; a provider asking us to wait longer is out of quota, not briefly busy
+
+
 class LLMUnavailable(RuntimeError):
     """No usable backend is configured. Raised once, with a message a human can act on."""
 
@@ -115,10 +118,15 @@ class LLM:
             except (urllib.error.URLError, TimeoutError, subprocess.TimeoutExpired, RuntimeError) as e:
                 if isinstance(e, urllib.error.HTTPError) and e.code == 429:
                     detail = e.read().decode(errors="replace")
-                    if ("quota" in detail.lower() and "per day" in detail.lower()) or re.search(r"retry in \d+h", detail):
+                    after = e.headers.get("retry-after", "")
+                    long_wait = after.replace(".", "").isdigit() and float(after) > MAX_RETRY_WAIT
+                    if long_wait or ("quota" in detail.lower() and "per day" in detail.lower()) \
+                            or re.search(r"retry in \d+h", detail):
                         # A daily quota does not come back within any sane retry window: stop now, say why.
-                        raise LLMUnavailable(f"LLM daily quota exhausted for {self.model}: "
-                                             f"{detail[detail.find('Quota exceeded'):][:160].strip()}") from e
+                        reason = re.search(r"(Quota exceeded|Rate limit reached)[^\n\"]{0,200}", detail)
+                        raise LLMUnavailable(f"LLM quota exhausted for {self.model}"
+                                             f"{f' (frees in {float(after) / 60:.0f} min)' if long_wait else ''}: "
+                                             f"{reason.group(0) if reason else detail[:160]}") from e
                 retryable = not isinstance(e, urllib.error.HTTPError) or e.code in (408, 409, 425, 429, 500, 502, 503, 504)
                 if not retryable or attempt == self.retries - 1:
                     self.usage.failures.append(str(e)[:200])

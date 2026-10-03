@@ -109,6 +109,28 @@ def test_answers_are_short(pairs):
         assert len(a["answer"].split()) <= 120, a["id"]
 
 
+def test_action_predictions_follow_the_interface(corpus):
+    """BRIEF.md [83-101]: one line per command, interface types only, ids from data/, times with offsets."""
+    from candor.actions import TYPES
+    commands = read_jsonl(config.ROOT / "evals/actions_train.jsonl")
+    predictions = read_jsonl(config.ROOT / "outputs/train/action_predictions.jsonl")
+    assert [p["id"] for p in predictions] == [c["id"] for c in commands]
+    slack_ids = {u["id"] for u in corpus.people} | {c["id"] for c in corpus.channels}
+    events = {u.id for u in corpus.units if u.source == "calendar"}
+    for p in predictions:
+        assert p["actions"], p["id"]
+        for a in p["actions"]:
+            assert a["type"] in TYPES, p["id"]
+            args = a["args"]
+            if a["type"] == "slack.send_message":
+                assert args["to"] in slack_ids, p["id"]
+            if a["type"] == "calendar.update_event":
+                assert args["event_id"] in events, p["id"]
+            for key in ("start", "end", "due"):
+                if key in args:
+                    assert datetime.fromisoformat(args[key]).tzinfo is not None, f"{p['id']}: {key} has no offset"
+
+
 def test_abstentions_say_so(pairs):
     for _, a in pairs:
         if a["abstained"]:

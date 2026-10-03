@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"memory.ask\",\"args\":{\"question\":\"What's our launch date again?\"}}]}"
+}
