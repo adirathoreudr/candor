@@ -23,16 +23,14 @@ class Memory:
         gone = self.corpus.deleted.get(unit_id)
         return not (gone and gone <= as_of)
 
+    def unit_at(self, unit_id: str, as_of: datetime) -> Unit:
+        """The unit as it read at `as_of`, latest edit applied. Caller checks visibility."""
+        u = self.by_id[unit_id]
+        newer = [text for t, text in self.corpus.edits.get(u.id, []) if t <= as_of]
+        return replace(u, text=newer[-1], meta={**u.meta, "edited": True}) if newer else u
+
     def visible(self, as_of: datetime) -> list[Unit]:
-        out = []
-        for u in self.corpus.units:
-            if not self.is_visible(u.id, as_of):
-                continue
-            newer = [text for t, text in self.corpus.edits.get(u.id, []) if t <= as_of]
-            if newer:
-                u = replace(u, text=newer[-1], meta={**u.meta, "edited": True})
-            out.append(u)
-        return out
+        return [self.unit_at(u.id, as_of) for u in self.corpus.units if self.is_visible(u.id, as_of)]
 
     def assert_visible(self, ids: list[str], as_of: datetime) -> None:
         """Last line of defence before anything is written out."""
