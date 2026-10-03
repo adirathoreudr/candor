@@ -101,11 +101,16 @@ class Index:
     # The header (title, speaker, recipients) matches every record in a meeting or thread, so it
     # counts for less than the content: otherwise "Yeah." outranks the decision because of its title.
     HEAD_WEIGHT = 0.3
+    # Records with fewer content words than this ("Yeah.", "Chris?", "Thanks, guys.") cannot be
+    # evidence for anything; they rank after every record that has content.
+    MIN_CONTENT_TERMS = 3
 
     def __init__(self, memory: Memory, embed_model: str = config.EMBED_MODEL):
         self.memory = memory
         self.docs = self._versions(memory)
-        self.body_bm25 = BM25([tokenize(d.body) for d in self.docs])
+        body_tokens = [tokenize(d.body) for d in self.docs]
+        self.contentful = np.array([len(set(t)) >= self.MIN_CONTENT_TERMS for t in body_tokens])
+        self.body_bm25 = BM25(body_tokens)
         self.head_bm25 = BM25([tokenize(d.head) for d in self.docs])
         self.embed_model = embed_model
         self._embedder = None
@@ -182,7 +187,7 @@ class Index:
             for rank, i in enumerate(order):
                 fused[i] += 1.0 / (rrf_k + rank + 1)
         out, seen = [], set()
-        for i in np.argsort(-fused, kind="stable"):
+        for i in np.lexsort((-fused, ~self.contentful)):   # contentful first, then by fused score
             if not visible[i] or fused[i] == 0:
                 continue
             uid = self.docs[i].unit_id
