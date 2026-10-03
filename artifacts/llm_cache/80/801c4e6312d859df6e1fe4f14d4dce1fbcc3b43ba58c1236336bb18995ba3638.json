@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"actions\": [\n    {\n      \"type\": \"gmail.send\",\n      \"args\": {\n        \"to\": [\"sarah.patel@acmefreight.example.com\"],\n        \"cc\": [],\n        \"subject\": \"Pricing proposal follow\u2011up\",\n        \"body\": \"Hi Sarah,\\n\\nJust checking in on the pricing proposal I sent. Let me know if you have any questions.\\n\\nThanks,\\nAlex\"\n      }\n    }\n  ]\n}"
+}

@@ -41,3 +41,4 @@ LLM_MODEL = os.environ.get("LLM_MODEL", "")                         # answers
 # across models multiplies the budget. Unset means the answer model does everything.
 LLM_MODEL_PLAN = os.environ.get("LLM_MODEL_PLAN", "") or LLM_MODEL
 LLM_MODEL_RERANK = os.environ.get("LLM_MODEL_RERANK", "") or LLM_MODEL
+LLM_MODEL_ACT = os.environ.get("LLM_MODEL_ACT", "") or LLM_MODEL
