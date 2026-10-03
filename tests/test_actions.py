@@ -71,6 +71,43 @@ def test_new_event_defaults_to_thirty_minutes(directory, events):
     assert args["end"] == "2026-09-17T14:30:00-07:00" and args["attendees"] == ["ben@brightline.example.com"]
 
 
+WED = datetime.fromisoformat("2026-09-16T10:00:00-07:00")
+
+
+def test_named_weekday_corrects_a_wrong_date(directory, events):
+    raw = {"type": "calendar.create_event", "args": {"title": "t", "start": "2026-09-18T10:00", "end": "2026-09-18T11:00"}}
+    [a] = normalize([raw], directory, events, "Set up an hour on Monday at 10", WED)
+    assert (a["args"]["start"], a["args"]["end"]) == ("2026-09-21T10:00:00-07:00", "2026-09-21T11:00:00-07:00")
+
+
+def test_named_weekday_moves_a_past_date_forward(directory, events):
+    event_id = next(i for i, m in events.items() if not m.get("recurrence") and not m.get("all_day"))
+    raw = {"type": "calendar.update_event", "args": {"event_id": event_id, "start": "2026-09-11T14:00", "end": "2026-09-11T15:30"}}
+    [a] = normalize([raw], directory, events, "Push my Friday block to 2pm", WED)
+    assert a["args"]["start"] == "2026-09-18T14:00:00-07:00" and a["args"]["end"] == "2026-09-18T15:30:00-07:00"
+
+
+def test_weekday_guard_leaves_correct_past_and_ambiguous_alone(directory, events):
+    ok = {"type": "reminder.create", "args": {"text": "x", "due": "2026-09-21T09:00"}}
+    assert normalize([ok], directory, events, "Remind me Monday at 9", WED)[0]["args"]["due"] == "2026-09-21T09:00:00-07:00"
+    past = {"type": "reminder.create", "args": {"text": "x", "due": "2026-09-14T09:00"}}
+    assert normalize([past], directory, events, "What did I do last Monday", WED)[0]["args"]["due"] == "2026-09-14T09:00:00-07:00"
+    two = {"type": "reminder.create", "args": {"text": "x", "due": "2026-09-18T09:00"}}
+    assert normalize([two], directory, events, "Monday or Friday", WED)[0]["args"]["due"] == "2026-09-18T09:00:00-07:00"
+
+
+def test_right_weekday_today_or_later_is_never_moved(directory, events):
+    for due in ("2026-09-16T15:00", "2026-09-23T15:00"):     # today, or a week out: both valid readings
+        raw = {"type": "reminder.create", "args": {"text": "x", "due": due}}
+        assert normalize([raw], directory, events, "Wednesday at 3pm", WED)[0]["args"]["due"] == due + ":00-07:00"
+
+
+def test_weekday_shift_recomputes_the_offset_across_dst(directory, events):
+    sat = datetime.fromisoformat("2026-10-31T10:00:00-07:00")
+    raw = {"type": "reminder.create", "args": {"text": "x", "due": "2026-10-30T09:00"}}   # a Friday, in the past
+    assert normalize([raw], directory, events, "Monday at 9", sat)[0]["args"]["due"] == "2026-11-02T09:00:00-08:00"
+
+
 def test_only_interface_types_leave(directory, events):
     raw = [{"type": t, "args": {}} for t in ["memory.ask", "app.open", "confirm", "shell.exec"]]
     assert all(a["type"] in TYPES for a in normalize(raw, directory, events))
