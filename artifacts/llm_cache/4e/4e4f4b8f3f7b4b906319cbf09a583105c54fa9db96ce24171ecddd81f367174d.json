@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Yes. In the Sep\u202f16 go/no\u2011go meeting John said the decision is to ship dark mode in v2.1 as a fast\u2011follow, meaning it will be cut from the v2 release.\", \"sources\":[\"MTG-0916-GONOGO#0103\",\"MTG-0911-DESIGN#0084\"], \"abstained\":false}"
+}

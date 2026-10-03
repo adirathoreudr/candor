@@ -1,7 +1,8 @@
 QUESTIONS ?= evals/memory_train.jsonl
 ANSWERS   ?= outputs/train/memory_answers.jsonl
 RESULTS   := results/$(shell git describe --always --dirty 2>/dev/null || echo nogit)
-PY        := PYTHONPATH=src uv run --frozen python
+# nice: keep the laptop responsive while embeddings build
+PY        := PYTHONPATH=src nice -n 10 uv run --frozen python
 
 .PHONY: run eval test setup check-uv
 
