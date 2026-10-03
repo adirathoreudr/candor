@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"geocoding fix regression passing\",\"geocoding regression test results\",\"geocoding fix regression cases\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}
