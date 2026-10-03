@@ -108,6 +108,13 @@ def test_weekday_shift_recomputes_the_offset_across_dst(directory, events):
     assert normalize([raw], directory, events, "Monday at 9", sat)[0]["args"]["due"] == "2026-11-02T09:00:00-08:00"
 
 
+def test_empty_clarify_and_confirm_still_say_something(directory, events):
+    cmd = "Message Sarah Patel on Slack that the proposal is coming"
+    [c, f] = normalize([{"type": "clarify", "args": {}}, {"type": "confirm", "args": {"summary": " "}}],
+                       directory, events, cmd, WED)
+    assert cmd in c["args"]["question"] and cmd in f["args"]["summary"]
+
+
 def test_only_interface_types_leave(directory, events):
     raw = [{"type": t, "args": {}} for t in ["memory.ask", "app.open", "confirm", "shell.exec"]]
     assert all(a["type"] in TYPES for a in normalize(raw, directory, events))

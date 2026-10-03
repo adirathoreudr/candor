@@ -155,6 +155,11 @@ def normalize(raw: list[dict], directory: Directory, events: dict, command: str 
                     args["end"] = (datetime.fromisoformat(args["start"]) + length).isoformat(timespec="seconds")
             elif kind == "reminder.create":
                 args["due"] = _local(args["due"])
+            elif kind == "clarify" and not str(args.get("question") or "").strip():
+                # A clarify that asks nothing is useless: ask about the command itself.
+                args["question"] = f"Can you say more about what you want: \"{command}\"?" if command else "Can you say more?"
+            elif kind == "confirm" and not str(args.get("summary") or "").strip():
+                args["summary"] = f"You asked: \"{command}\". This can't be undone." if command else "This can't be undone."
             _align_weekday(kind, args, command, as_of)
         except Unresolved as e:
             kind, args = "clarify", {"question": str(e)}

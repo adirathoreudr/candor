@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"gmail.send\",\"args\":{\"to\":[\"john@brightline.example.com\"],\"cc\":[],\"subject\":\"Corrected NRR\",\"body\":\"Hi John,\\n\\nThe corrected NRR is 112%.\\n\\nLet me know if you need anything else.\\n\\nThanks,\\nAlex\"}},{\"type\":\"slack.send_message\",\"args\":{\"to\":\"U06BEN\",\"text\":\"Thanks for catching that NRR correction.\"}}]}"
+}

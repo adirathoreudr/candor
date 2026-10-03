@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"reminder.create\",\"args\":{\"text\":\"Follow up with Acme\",\"due\":\"2026-09-25T09:00\"}}]}"
+}
