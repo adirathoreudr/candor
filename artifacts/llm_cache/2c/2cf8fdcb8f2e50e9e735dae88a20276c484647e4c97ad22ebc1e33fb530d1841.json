@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "qwen/qwen3.8-27b",
+ "reply": "{\n\"ranked\": [\n\"EM-0916-ACME-ACK\",\n\"SL-F-0150\",\n\"SL-F-0138\",\n\"EM-0915-ACME-PROP\"\n]\n}"
+}

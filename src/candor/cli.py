@@ -18,7 +18,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         rows.append({"id": q["id"], "answer": result["answer"], "sources": result["sources"],
                      "retrieved": result["retrieved"], "abstained": result["abstained"]})
     write_jsonl(args.out, rows)
-    print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.llm.usage.summary()}",
+    print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.usage()}",
           file=sys.stderr)
 
 

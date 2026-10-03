@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Harbor Logistics sign contract 2026\",\"Harbor Logistics agreement 2026\",\"Harbor Logistics signing this year\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Acme contract signed\",\"Acme signed agreement\",\"Acme contract finalized\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

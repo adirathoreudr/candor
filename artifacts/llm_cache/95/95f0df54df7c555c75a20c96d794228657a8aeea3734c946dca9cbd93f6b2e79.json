@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"ETA prototype database choice Alex Rivera\",\"ETA prototype database reason\",\"ETA prototype database picked\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}
