@@ -40,6 +40,44 @@ def cmd_do(args: argparse.Namespace) -> None:
         print(json.dumps(action, ensure_ascii=False))
 
 
+def cmd_assistant(args: argparse.Namespace) -> None:
+    """Text or push-to-talk voice assistant. Dry run unless --execute (sandbox outbox, never real services)."""
+    from candor.assistant import Assistant
+    candor = Candor()
+    bot = Assistant(candor, execute=args.execute)
+    as_of = datetime.fromisoformat(args.as_of) if args.as_of else candor.data_end
+    mode = "execute (sandbox outbox/)" if args.execute else "dry run"
+    print(f"Candor assistant for {candor.corpus.owner}. Now = {as_of.isoformat()}. Mode: {mode}. Ctrl-D to quit.")
+    device = None
+    if args.voice:
+        from candor import voice
+        device, name = voice.microphone()
+        print(f"Microphone: {name}")
+    while True:
+        try:
+            if args.voice:
+                input("\nPress Enter and speak ")
+                text = voice.listen(device)
+                print(f"you> {text}")
+            else:
+                text = input("\nyou> ")
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+        if not text.strip():
+            continue
+        try:
+            reply = bot.handle(text, as_of)
+        except LLMUnavailable as e:   # quota or key: say so and keep the session alive
+            print(f"candor> I can't reach the language model right now: {e}")
+            continue
+        print(f"candor> {reply.text}")
+        if reply.sources:
+            print(f"        sources: {', '.join(reply.sources)}")
+        if args.voice:
+            voice.speak(reply.text)
+
+
 def cmd_ask(args: argparse.Namespace) -> None:
     candor = Candor()
     result = candor.ask(args.question, datetime.fromisoformat(args.as_of))
@@ -71,6 +109,12 @@ def main() -> None:
     do.add_argument("command")
     do.add_argument("--as-of", required=True, help="ISO 8601 with offset, e.g. 2026-09-18T09:00:00-07:00")
     do.set_defaults(func=cmd_do)
+
+    assistant = sub.add_parser("assistant", help="interactive assistant (text, or --voice for push-to-talk)")
+    assistant.add_argument("--voice", action="store_true", help="speak and listen (macOS: ffmpeg mic + say)")
+    assistant.add_argument("--execute", action="store_true", help="run confirmed actions into the sandbox outbox/")
+    assistant.add_argument("--as-of", help="the current moment; default: end of the data")
+    assistant.set_defaults(func=cmd_assistant)
 
     args = p.parse_args()
     try:
