@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"actions\": [{\"type\": \"confirm\", \"args\": {\"summary\": \"Delete all emails from Marcus\"}}}]}"
+}

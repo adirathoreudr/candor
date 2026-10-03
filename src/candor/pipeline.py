@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 
 from candor import config, ingest, people
+from candor.actions import Directory, plan_actions
 from candor.answer import write_answer
 from candor.index import Index
 from candor.llm import LLM, LLMUnavailable
@@ -26,6 +27,8 @@ class Candor:
         self.llm = LLM()
         self.llm_plan = LLM(model=config.LLM_MODEL_PLAN, max_tokens=2000)
         self.llm_rerank = LLM(model=config.LLM_MODEL_RERANK, max_tokens=2000)
+        self.llm_act = LLM(model=config.LLM_MODEL_ACT, max_tokens=2000)
+        self.directory = Directory(self.corpus, self.people)
         try:
             self.llm.check()
             self.llm_ok = True
@@ -61,6 +64,13 @@ class Candor:
         self.memory.assert_visible(result["sources"], as_of)
         return {**result, "retrieved": ranked}
 
+    def act(self, command: str, as_of: datetime) -> list[dict]:
+        """Dry run: the actions the command would take. Needs an LLM; fails loud without one."""
+        if not self.llm_ok:
+            raise LLMUnavailable("actions need an LLM backend: set LLM_API_KEY in .env (see .env.example)")
+        return plan_actions(self.llm_act, self.memory, self.index, self.directory, self.people, command, as_of)
+
     def usage(self) -> str:
-        return " | ".join(f"{name} {llm.model}: {llm.usage.summary()}"
-                          for name, llm in (("plan", self.llm_plan), ("rerank", self.llm_rerank), ("answer", self.llm)))
+        return " | ".join(f"{name} {llm.model}: {llm.usage.summary()}" for name, llm in (
+            ("plan", self.llm_plan), ("rerank", self.llm_rerank), ("answer", self.llm), ("act", self.llm_act))
+            if llm.usage.calls or llm.usage.cache_hits)

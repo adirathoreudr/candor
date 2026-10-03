@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"actions\":[{\"type\":\"slack.send_message\",\"args\":{\"to\":\"U04DANA\",\"text\":\"Thanks for the dark mode tokens, Dana.\"}},{\"type\":\"gmail.send\",\"args\":{\"to\":[\"leah@brightline.example.com\"],\"cc\":[],\"subject\":\"Designer search pause\",\"body\":\"Hi Leah,\\n\\nWe're pausing the designer search for now.\\n\\nThanks,\\nAlex\"}}]}"
+}

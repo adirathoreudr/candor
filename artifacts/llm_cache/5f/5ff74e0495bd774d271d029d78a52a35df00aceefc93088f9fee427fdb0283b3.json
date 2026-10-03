@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"actions\": [{\"type\": \"calendar.create_event\", \"args\": {\"title\": \"Harbor\", \"start\": \"2026-09-18T10:00\", \"end\": \"2026-09-18T11:00\", \"attendees\": [\"john@brightline.example.com\", \"marcus@brightline.example.com\"]}}]}"
+}
