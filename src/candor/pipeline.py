@@ -64,6 +64,12 @@ class Candor:
         self.memory.assert_visible(result["sources"], as_of)
         return {**result, "retrieved": ranked}
 
+    @property
+    def data_end(self) -> datetime:
+        """The last moment anything was said or written: a sensible 'now' for the interactive assistant.
+        Calendar events are excluded because they carry future dates."""
+        return max(u.time for u in self.corpus.units if u.source != "calendar")
+
     def act(self, command: str, as_of: datetime) -> list[dict]:
         """Dry run: the actions the command would take. Needs an LLM; fails loud without one."""
         if not self.llm_ok:
