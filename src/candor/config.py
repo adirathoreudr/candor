@@ -26,9 +26,9 @@ TIMEZONE = "America/Los_Angeles"
 
 # Sized for an 8 GB laptop: small model, small batches, few threads. Measured: the library default
 # (batch 256, all cores, bge-base) froze a MacBook Air M2.
-EMBED_MODEL = os.environ.get("CANDOR_EMBED_MODEL", "BAAI/bge-small-en-v1.5")
-EMBED_THREADS = int(os.environ.get("CANDOR_EMBED_THREADS", "2"))
-EMBED_BATCH = int(os.environ.get("CANDOR_EMBED_BATCH", "8"))
+EMBED_MODEL = os.environ.get("CANDOR_EMBED_MODEL") or "BAAI/bge-small-en-v1.5"
+EMBED_THREADS = int(os.environ.get("CANDOR_EMBED_THREADS") or 2)
+EMBED_BATCH = int(os.environ.get("CANDOR_EMBED_BATCH") or 8)
 EMBED_MAX_CHARS = 2000   # the model reads 512 tokens at most; longer text only costs memory
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("OMP_NUM_THREADS", str(EMBED_THREADS))
@@ -41,7 +41,7 @@ _DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
 _DEFAULT_MODELS = {"answer": "openai/gpt-oss-120b", "plan": "openai/gpt-oss-20b",
                    "rerank": "qwen/qwen3.8-27b", "act": "openai/gpt-oss-20b"}
 
-LLM_BACKEND = os.environ.get("LLM_BACKEND", "openai")      # openai | claude-cli
+LLM_BACKEND = os.environ.get("LLM_BACKEND") or "openai"      # openai | claude-cli
 if LLM_BACKEND == "claude-cli":   # the local CLI takes its own model names
     _DEFAULT_MODELS = dict.fromkeys(_DEFAULT_MODELS, "haiku")
 LLM_BASE_URL = (os.environ.get("LLM_BASE_URL") or _DEFAULT_BASE_URL).rstrip("/")
