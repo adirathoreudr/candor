@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"I don't know Dana's home address; the records contain no such information.\", \"sources\": [], \"abstained\": true}"
+}

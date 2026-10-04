@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"No. As of the latest record, Acme has not signed; Sarah Patel said on Sep\u202f16 they are reviewing the proposal with their CFO and will reply by September\u202f25.\", \"sources\":[\"EM-0916-ACME-ACK\",\"SL-F-0150\"], \"abstained\":false}"
+}

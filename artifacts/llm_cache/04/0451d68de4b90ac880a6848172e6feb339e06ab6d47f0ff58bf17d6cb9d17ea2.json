@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Marcus heard through the grapevine that Acme is also talking to RouteWise, which might explain the CFO review.\", \"sources\": [\"SL-SALES-0915-1\"], \"abstained\": false}"
+}

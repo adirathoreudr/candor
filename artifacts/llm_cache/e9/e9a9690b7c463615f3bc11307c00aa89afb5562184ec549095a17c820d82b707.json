@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"The board deck should show a net revenue retention of 118%.\", \"sources\": [\"CGPT-0913-BOARD#m4\", \"CGPT-0913-BOARD#m2\"], \"abstained\": false}"
+}

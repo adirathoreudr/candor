@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Ben sent a staging key for the ETA eval, but the key was redacted in the record, so its value is not disclosed.\", \"sources\": [\"SL-DM-AB-0915-2\"], \"abstained\": false}"
+}

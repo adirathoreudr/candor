@@ -38,6 +38,7 @@ class Directory:
         self.people = [p for p in people if p.name != corpus.owner]
         self.channels = {c["id"]: c for c in corpus.channels}
         self.slack_users = {u["id"] for u in corpus.people}
+        self.emails = {e for p in people for e in p.emails}
 
     def _person(self, value: str, need: str) -> Person:
         v = value.strip().lstrip("@").lower()
@@ -63,10 +64,14 @@ class Directory:
             return by_name[0]
         return self._person(v, "slack_id").slack_id
 
-    def email(self, value) -> str:
+    def email(self, value, command: str = "") -> str:
+        """A name or an address. An address must exist in the data or be spelled out in the command:
+        the model may not invent or abbreviate one."""
         v = str(value).strip().lower()
         if "@" in v:
-            return v
+            if v in self.emails or v in command.lower():
+                return v
+            raise Unresolved(f"I couldn't find {value} in your contacts. Who did you mean?")
         return sorted(self._person(str(value), "emails").emails)[0]
 
     def describe_channels(self) -> str:
@@ -134,15 +139,15 @@ def normalize(raw: list[dict], directory: Directory, events: dict, command: str 
             if kind == "slack.send_message":
                 args["to"] = directory.slack_target(args.get("to"))
             elif kind == "gmail.send":
-                args["to"] = [directory.email(v) for v in _as_list(args.get("to"))]
-                args["cc"] = [directory.email(v) for v in _as_list(args.get("cc"))]
+                args["to"] = [directory.email(v, command) for v in _as_list(args.get("to"))]
+                args["cc"] = [directory.email(v, command) for v in _as_list(args.get("cc"))]
                 if not args["to"]:
                     raise Unresolved("Who should the email go to?")
             elif kind == "calendar.create_event":
                 args["start"] = _local(args["start"])
                 args["end"] = _local(args["end"]) if args.get("end") else \
                     (datetime.fromisoformat(args["start"]) + DEFAULT_MEETING).isoformat(timespec="seconds")
-                args["attendees"] = [directory.email(v) for v in _as_list(args.get("attendees"))]
+                args["attendees"] = [directory.email(v, command) for v in _as_list(args.get("attendees"))]
             elif kind == "calendar.update_event":
                 event = events.get(args.get("event_id"))
                 if event is None:
@@ -206,7 +211,7 @@ def plan_actions(llm: LLM, memory: Memory, index: Index, directory: Directory, p
                  command: str, as_of: datetime) -> list[dict]:
     events = _events(memory, as_of)
     evidence = [memory.unit_at(uid, as_of) for uid, _ in index.search(command, as_of, k=EVIDENCE_K)]
-    prompt = (config.PROMPTS / "act.v1.md").read_text().format(
+    prompt = (config.PROMPTS / "act.v2.md").read_text().format(
         owner=memory.corpus.owner, command=command,
         as_of_local=as_of.astimezone(LOCAL).strftime("%Y-%m-%d %H:%M"), as_of_weekday=as_of.astimezone(LOCAL).strftime("%A"),
         days=_days(as_of),

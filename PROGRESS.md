@@ -18,9 +18,19 @@ Eval log (measured, train set, `make eval`, judge none unless noted) and failure
 | P4 | + reranker (rerank.v1) | 96.0% | | MRR 0.900; top-5 92%; 0 forbidden |
 | P4 | + answer.v2 | 96.0% | 96.3% | source precision 0.951; 0 hard failures; answer model 46.8K prompt tokens |
 
+### Live checks (P8)
+
+Six unseen questions, live: all well-formed, nothing invisible at as_of retrieved, no secrets; the NRR asked at 10:00 on Sep 16 is 118% and on Sep 18 the corrected 112%. Three unseen commands on gpt-oss-20b: two errors (a pointless 'which channel' for Marcus, an email abbreviated to 'pri...@'), which moved actions back to gpt-oss-120b with act.v2 and email validation. Train actions on act.v2 + 120b: 12/12.
+
+Voice, real microphone: speech played through the speakers, recorded by the MacBook mic, transcribed by Whisper ('Message Sarah on Slack that the G-Coding fix looks'). A scripted `assistant --voice` session answered the launch date (October 21, 3 sources), asked to confirm 'Delete all my emails from Marcus', and recorded it after 'Yes'. The first scripted session crashed on a garbled command (planner returned nothing, error type not caught): fixed by the LLMError change.
+
 ### Official-style judge (P7)
 
 `score_memory.py --judge claude-cli --model sonnet` on the P4 answers: strict 87.0% (95% CI 72 to 97%), 0 hard failures, 0 unverified. Rules alone: 96.3%. Marked down for missing detail: TR-04 (extension), TR-07 (says mockups still being refined), TR-08 (Dana's report), TR-09 (attribution of the condition), TR-10 (ARR figure, liability reason).
+
+### answer.v3 (P8)
+
+Rules 96.3% -> 100.0% (TR-08 now passes); official-style judge (sonnet) 87.0% -> 88.9% (95% CI 78 to 96%); adversarial dev 12/12; source recall 0.88 -> 0.84, precision 0.951 -> 0.959. The judge still marks down TR-04 (extension), TR-08 (partial attribution), TR-10 (liability reason), TR-25 (flight time) and newly TR-24 (adds details the reference lacks), the cost of asking for specifics. TR-07 and TR-09 are fixed.
 
 ### Reproducibility (P7)
 

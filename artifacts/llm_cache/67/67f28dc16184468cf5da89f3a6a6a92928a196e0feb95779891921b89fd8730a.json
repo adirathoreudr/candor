@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Harbor demo September 14 2026\",\"Mike Dunn Harbor demo\",\"Harbor demo meeting transcript\"],\"date_from\":\"2026-09-14\",\"date_to\":\"2026-09-14\",\"followup\":\"\"}"
+}

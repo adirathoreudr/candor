@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Yes. You emailed the pricing proposal to Sarah Patel on September\u202f15, 2022 (EM-0915-ACME-PROP) and Slack notes confirm it went out that afternoon (SL-F-0138). Sarah replied on September\u202f16 confirming receipt (EM-0916-ACME-ACK).\",\"sources\":[\"EM-0915-ACME-PROP\",\"SL-F-0138\",\"EM-0916-ACME-ACK\"],\"abstained\":false}"
+}

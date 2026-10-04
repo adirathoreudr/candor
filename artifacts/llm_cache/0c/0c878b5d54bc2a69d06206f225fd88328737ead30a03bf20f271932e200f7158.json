@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Your flight to Denver is on Wednesday\u202fSeptember\u202f23,\u202f2026. On that day your calendar shows a Board run\u2011through 7:30\u202f\u2013\u202f8:30\u202fAM and the Brightline Q3 board meeting 9:00\u202f\u2013\u202f12:00\u202fPM.\", \"sources\":[\"EM-0912-FLIGHT\",\"CAL-F-25\",\"CAL-BOARD\"], \"abstained\":false}"
+}

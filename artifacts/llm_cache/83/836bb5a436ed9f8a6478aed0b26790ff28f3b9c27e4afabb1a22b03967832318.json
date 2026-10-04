@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"I don't know; none of the provided records contain any information about Dana's salary.\", \"sources\": [], \"abstained\": true}"
+}

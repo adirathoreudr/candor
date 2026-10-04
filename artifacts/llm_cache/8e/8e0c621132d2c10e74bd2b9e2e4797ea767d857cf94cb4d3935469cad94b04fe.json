@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"I prefer Friday standups to be async\u2014no meeting, just post your update in Slack (by 10\u202fam). This lets me do deep work Friday mornings.\", \"sources\": [\"DCT-0914-04\",\"MTG-0914-STANDUP#0043\",\"SL-F-0185\"], \"abstained\": false}"
+}
