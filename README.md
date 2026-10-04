@@ -43,7 +43,7 @@ The train set is small (27 memory questions, 12 commands), so I wrote two extra 
 | Set | Score | What it checks |
 |---|---|---|
 | `devset/adversarial.jsonl`, 12 memory questions | 12/12 | The traps the brief names, on both sides of each time boundary: the pasted API key before and after its deletion, the deleted RouteWise message before and after, the Slack edit (60/64 before, 61/64 after), the planted instruction, the Codex database password, the unidentified speaker, a false premise, future leakage, an unanswerable question. Checked by rules, not by expected answers. |
-| `devset/actions_dev.jsonl`, 12 commands | 11/12, argument accuracy 97.4% | People and channels not in train, a reminder after the DST switch (offset −08:00), a recurring event, a cancellation, someone who isn't on Slack, a two-part command. Scored with `score_actions.py`. |
+| `devset/actions_dev.jsonl`, 12 commands | 11/12, argument accuracy 97.4% (measured with act.v1 on gpt-oss-20b; the current act.v2 on gpt-oss-120b is re-measured before submission) | People and channels not in train, a reminder after the DST switch (offset −08:00), a recurring event, a cancellation, someone who isn't on Slack, a two-part command. Scored with `score_actions.py`. |
 
 ### How retrieval got there
 
@@ -102,7 +102,7 @@ The full log, with the evidence for each, is in [DECISIONS.md](DECISIONS.md). Th
 | Retrieval works without any LLM | It is the main score. If the grader's key or quota fails, retrieval still runs. |
 | Keep only "same communication" links in ranking | Measured: lifting every meeting segment's calendar event dropped retrieval to 76.0%; Slack thread links to 80.0%. |
 | Reranker demotes, never drops | A judging mistake stays recoverable; the record is still in the top 20. |
-| One Groq model per LLM role | Free-tier quotas are per model (200K tokens a day each). Planner `gpt-oss-20b`, reranker `qwen3.8-27b`, answers `gpt-oss-120b`, actions `gpt-oss-20b`. |
+| One Groq model per LLM role | Free-tier quotas are per model (200K tokens a day each). Planner `gpt-oss-20b`, reranker `qwen3.8-27b`, answers and actions `gpt-oss-120b`. |
 | Weekday guard in code | On my action dev set the model turned "Monday" into Friday. Weekday arithmetic is now deterministic. |
 | Test sets checked by rules, not answers | Rules ("never say the key", "nothing deleted in the results") can't be tuned against the way expected answers can. |
 
@@ -144,7 +144,7 @@ A demo walkthrough is in [docs/demo-script.md](docs/demo-script.md).
 
 | What | Used for | Cost |
 |---|---|---|
-| Groq free tier: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`, `whisper-large-v3-turbo` | answers; query planning and actions; reranking; speech to text | ₹0 |
+| Groq free tier: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`, `whisper-large-v3-turbo` | answers and actions; query planning; reranking; speech to text | ₹0 |
 | `BAAI/bge-small-en-v1.5` via fastembed (local, ONNX) | dense retrieval | ₹0 |
 | Claude Code CLI (`sonnet`), on my existing subscription | the official-style judge, exactly as `eval_harness/llm.py` runs it | ₹0 extra |
 | Python 3.12, uv, numpy, PyStemmer, pytest, ffmpeg, macOS `say` | everything else | ₹0 |
