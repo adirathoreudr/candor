@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"NRR number board deck\",\"Net Revenue Retention board deck\",\"NRR slide for board deck\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

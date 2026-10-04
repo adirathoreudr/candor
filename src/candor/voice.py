@@ -73,11 +73,18 @@ def multipart(fields: dict[str, str], file_field: str, file_path: Path) -> tuple
     return b"".join(parts), f"multipart/form-data; boundary={boundary}"
 
 
-def transcribe(path: Path) -> str:
+def vocabulary(names: list[str]) -> str:
+    """Whisper's prompt field biases recognition toward these spellings (people, channels, products)."""
+    return ", ".join(dict.fromkeys(n for n in names if n))[:800]
+
+
+def transcribe(path: Path, prompt: str = "") -> str:
     if not (config.LLM_BASE_URL and config.LLM_API_KEY):
         raise LLMUnavailable("voice needs LLM_BASE_URL and LLM_API_KEY for speech-to-text (see .env.example)")
-    body, content_type = multipart({"model": STT_MODEL, "language": "en", "response_format": "json", "temperature": "0"},
-                                   "file", path)
+    fields = {"model": STT_MODEL, "language": "en", "response_format": "json", "temperature": "0"}
+    if prompt:
+        fields["prompt"] = prompt
+    body, content_type = multipart(fields, "file", path)
     req = urllib.request.Request(f"{config.LLM_BASE_URL}/audio/transcriptions", data=body, method="POST",
                                  headers={"Authorization": f"Bearer {config.LLM_API_KEY}", "Content-Type": content_type,
                                           "User-Agent": "candor/0.1"})
@@ -90,8 +97,8 @@ def speak(text: str) -> None:
     subprocess.run(["say", spoken[:600]], check=False)
 
 
-def listen(device: int) -> str:
+def listen(device: int, prompt: str = "") -> str:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "command.wav"
         record(path, device)
-        return transcribe(path)
+        return transcribe(path, prompt)

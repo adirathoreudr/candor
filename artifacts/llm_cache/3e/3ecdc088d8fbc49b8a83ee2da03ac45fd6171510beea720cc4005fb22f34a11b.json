@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Priya Nair geocoding regression run\",\"Priya Nair regression run geocoding\",\"Priya Nair geocoding regression issue\"],\"date_from\":null,\"date_to\":null,\"followup\":\"\"}"
+}

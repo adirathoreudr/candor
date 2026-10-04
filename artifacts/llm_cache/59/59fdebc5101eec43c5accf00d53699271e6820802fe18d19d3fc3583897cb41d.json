@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"actions\": [\n    {\n      \"type\": \"gmail.send\",\n      \"args\": {\n        \"to\": [\"john@brightline.example.com\"],\n        \"cc\": [],\n        \"subject\": \"Corrected NRR\",\n        \"body\": \"Hi John,\\n\\nThe corrected NRR is 112%.\\n\\nThanks,\\nAlex\"\n      }\n    },\n    {\n      \"type\": \"slack.send_message\",\n      \"args\": {\n        \"to\": \"U06BEN\",\n        \"text\": \"Thanks for catching that, Ben. Appreciate it.\"\n      }\n    }\n  ]\n}"
+}

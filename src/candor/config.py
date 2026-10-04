@@ -39,7 +39,7 @@ os.environ.setdefault("OMP_NUM_THREADS", str(EMBED_THREADS))
 # for new questions. Setting LLM_MODEL (another provider) makes it the default for every role.
 _DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
 _DEFAULT_MODELS = {"answer": "openai/gpt-oss-120b", "plan": "openai/gpt-oss-20b",
-                   "rerank": "qwen/qwen3.8-27b", "act": "openai/gpt-oss-20b"}
+                   "rerank": "qwen/qwen3.8-27b", "act": "openai/gpt-oss-120b"}
 
 LLM_BACKEND = os.environ.get("LLM_BACKEND") or "openai"      # openai | claude-cli
 if LLM_BACKEND == "claude-cli":   # the local CLI takes its own model names

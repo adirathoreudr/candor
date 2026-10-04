@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"Use the corrected NRR of 112% in the board deck.\", \"sources\":[\"DCT-0917-06\",\"SL-DM-BA-0916-1\"], \"abstained\":false}"
+}
