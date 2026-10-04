@@ -33,9 +33,9 @@ All numbers below are measured on the train sets with the provided harness, on t
 | | Score | Notes |
 |---|---|---|
 | Retrieval (main score) | 96.0% (95% CI 89 to 100%) | 24 of 25 scored questions have everything they need in the top 10. Top-5 coverage 92%, MRR 0.900. Zero forbidden records in any top 10. |
-| Answers, rules only | 96.3% | `--judge none` |
-| Answers, official style | 87.0% (95% CI 72 to 97%) | `--judge claude-cli --model sonnet`, the organizer's judge. Zero hard failures. |
-| Sources cited | recall 0.88, precision 0.951 | |
+| Answers, rules only | 100.0% | `--judge none` |
+| Answers, official style | 88.9% (95% CI 78 to 96%) | `--judge claude-cli --model sonnet`, the organizer's judge. Zero hard failures. |
+| Sources cited | recall 0.84, precision 0.959 | |
 | Actions | 12/12, argument accuracy 100% | dry run |
 
 The train set is small (27 memory questions, 12 commands), so I wrote two extra test sets that the system was never tuned against:
@@ -59,7 +59,7 @@ Each row is one change, measured on its own commit (retrieval-only runs cost no 
 | LLM query planner (rewrites, date windows, a second hop) | 88.0% | 84% | 0.602 |
 | LLM reranker over the top 30 plus linked records | 96.0% | 92% | 0.900 |
 
-Answers went from 74.1% to 81.5% with better retrieval, then to 96.3% (rules) with the second version of the answer prompt.
+Answers went from 74.1% to 81.5% with better retrieval, then to 96.3% (rules) with the second version of the answer prompt and 100.0% with the third, which asks for the decisive specifics (numbers, dates, who, why). The official-style judge moved from 87.0% to 88.9% on that last step, which is within its noise on 27 questions.
 
 ## Architecture
 
@@ -124,7 +124,7 @@ The first official-judge run scored 0%: the Claude Code CLI's login had expired,
 
 Retrieval misses one train question: "Why did the launch slip from September 30?" The cause is in a Slack thread root that shares no words with the question. The answer is still right, from other records.
 
-The official-style judge marks five answers down, all for missing detail rather than wrong facts: Dana's second-hand report about John and dark mode (TR-08), the $120K ARR and liability-clause reasons on Harbor (TR-10), the agreed deadline extension on the proposal (TR-04), "still being refined" where the reference says the mockups were done (TR-07), and who set the condition on the second designer (TR-09).
+The official-style judge marks five answers down. Four miss a detail: the agreed deadline extension on the proposal (TR-04), part of the attribution in Dana's second-hand report (TR-08), John's liability-clause reason on Harbor (TR-10) and the flight time (TR-25). One (TR-24) adds details the reference doesn't have, which is the cost of asking the model for specifics.
 
 On my action dev set, "30 minutes before the go/no-go meeting" picked the 10:00 "Go/no-go prep" event instead of the 15:00 meeting. That is the model's judgment; a prompt rule could fix it, but I would have had to rerun every action and there was no quota left that day.
 
@@ -148,6 +148,7 @@ A demo walkthrough is in [docs/demo-script.md](docs/demo-script.md).
 | `BAAI/bge-small-en-v1.5` via fastembed (local, ONNX) | dense retrieval | ₹0 |
 | Claude Code CLI (`sonnet`), on my existing subscription | the official-style judge, exactly as `eval_harness/llm.py` runs it | ₹0 extra |
 | Python 3.12, uv, numpy, PyStemmer, pytest, ffmpeg, macOS `say` | everything else | ₹0 |
+| Claude Code | coding assistant while building | existing subscription |
 
 To use another provider, set `LLM_BASE_URL`, `LLM_API_KEY` and `LLM_MODEL` in `.env` (any OpenAI-compatible endpoint); `LLM_MODEL` then becomes the default for every role. `LLM_BACKEND=claude-cli` uses a local Claude Code CLI instead, with no key.
 
@@ -179,4 +180,4 @@ PROGRESS.md       eval log per commit, failures, what didn't work
 
 ## Submission
 
-Commit: filled in when the submission commit is tagged.
+The submitted commit is tagged `submission`; its full hash is in the reply email. Nothing changes after it.

@@ -22,6 +22,10 @@ Eval log (measured, train set, `make eval`, judge none unless noted) and failure
 
 `score_memory.py --judge claude-cli --model sonnet` on the P4 answers: strict 87.0% (95% CI 72 to 97%), 0 hard failures, 0 unverified. Rules alone: 96.3%. Marked down for missing detail: TR-04 (extension), TR-07 (says mockups still being refined), TR-08 (Dana's report), TR-09 (attribution of the condition), TR-10 (ARR figure, liability reason).
 
+### answer.v3 (P8)
+
+Rules 96.3% -> 100.0% (TR-08 now passes); official-style judge (sonnet) 87.0% -> 88.9% (95% CI 78 to 96%); adversarial dev 12/12; source recall 0.88 -> 0.84, precision 0.951 -> 0.959. The judge still marks down TR-04 (extension), TR-08 (partial attribution), TR-10 (liability reason), TR-25 (flight time) and newly TR-24 (adds details the reference lacks), the cost of asking for specifics. TR-07 and TR-09 are fixed.
+
 ### Reproducibility (P7)
 
 Fresh clone, no `.env`, no key, empty model cache: `make all` in 2 min 16 s (embedding model download included); `outputs/train/memory_answers.jsonl` and `action_predictions.jsonl` byte-identical to the committed files; 0 live LLM calls, all from the committed cache.

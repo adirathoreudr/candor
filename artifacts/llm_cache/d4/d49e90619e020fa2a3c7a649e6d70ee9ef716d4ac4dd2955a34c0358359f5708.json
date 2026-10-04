@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\":\"We proposed a 3\u2011year agreement at $18 per vehicle per month, with a reduced $15 per vehicle per month for every vehicle above 500, and the onboarding fee waived.\", \"sources\":[\"EM-0915-ACME-PROP\"], \"abstained\":false}"
+}

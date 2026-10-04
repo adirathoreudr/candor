@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"There is no consensus. John Okafor said on Sep\u202f14 he doesn\u2019t think Harbor will sign this year. Marcus Webb said on Sep\u202f11 and again on Sep\u202f17 that Mike told him they\u2019ll sign in Q4, so he expects a signing this year. No later record settles the disagreement.\", \"sources\": [\"SL-SALES-0917-1\",\"SL-DM-JA-0914-1\",\"SL-SALES-0911-1\"], \"abstained\": false}"
+}
