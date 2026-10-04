@@ -20,7 +20,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         rows.append({"id": q["id"], "answer": result["answer"], "sources": result["sources"],
                      "retrieved": result["retrieved"], "abstained": result["abstained"]})
     write_jsonl(args.out, rows)
-    print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.usage()}",
+    print(f"wrote {len(rows)} answers to {args.out} in {time.time() - started:.0f}s; {candor.report()}",
           file=sys.stderr)
 
 
@@ -30,7 +30,7 @@ def cmd_act(args: argparse.Namespace) -> None:
     candor = Candor()
     rows = [{"id": c["id"], "actions": candor.act(c["command"], datetime.fromisoformat(c["as_of"]))} for c in commands]
     write_jsonl(args.out, rows)
-    print(f"wrote {len(rows)} action plans to {args.out} in {time.time() - started:.0f}s; {candor.usage()}",
+    print(f"wrote {len(rows)} action plans to {args.out} in {time.time() - started:.0f}s; {candor.report()}",
           file=sys.stderr)
 
 
