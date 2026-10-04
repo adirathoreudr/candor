@@ -1,37 +1,35 @@
 # Demo video
 
-The video is built by a script, so it can be re-rendered exactly. Only the live voice clip is recorded by hand.
+Two parts: a 75-second cut built from code, then about 60 seconds of the voice assistant recorded live.
 
 ```bash
-brew install vhs                                   # scripted terminal recorder (once)
-docs/video/build.sh ~/Movies/voice-clip.mov        # writes ~/Movies/candor-demo.mp4
+CANDOR_PLAYWRIGHT_PYTHON=/path/to/python-with-playwright docs/video/build.sh ~/Movies/voice-clip.mov
+# -> ~/Movies/candor-demo.mp4
 ```
 
-`docs/video/build.sh` renders each terminal segment in `docs/video/tapes/` with vhs (1920x1080), narrates it from `docs/video/narration.txt` with macOS `say`, fits each segment to its narration, normalizes the voice clip to the same format and loudness, and joins everything. Every command in the tapes replays from the committed LLM cache: no API key or quota is used. Without a clip argument the video is the automated part only (about 2 min 55 s); with a 60-second clip it is about 4 minutes.
+## Part 1: the cut (docs/video/)
 
-| Segment | Shows |
-|---|---|
-| 00 title | what Candor is |
-| 01 now vs then | launch date as of Sep 18 (October 21) and as of Sep 12 (October 14), with sources |
-| 02 correction | board deck NRR before Ben's correction (118%) and after (112%) |
-| 03 disagreement | Harbor: Marcus and John disagree; both sides reported |
-| 04 don't know | Dana's salary (I don't know); Acme contract despite the planted instruction (not signed) |
-| 05 actions | Sarah Patel by email for the proposal; delete needs confirmation; reminder at 08:00, not the run-through |
-| 06 assistant | plan, yes, dry run, audit log |
-| 07 voice | your live clip (below) |
-| 08 evals | `make test`, `make eval`, `make eval-actions` live |
-| 09 close | repo |
+Made with the `/brag` skill (its `brag-slim` variant). `brag-plan.md` has the angle and the storyboard. `index.html` draws every frame as a pure function of time. `render.py` captures the 2,250 frames with headless Chromium. `music.py` synthesizes an original soundtrack (A minor, 92 BPM, music and effects in one key). `build.sh` mixes the soundtrack, bakes the poster in as frame 0 and appends the voice clip. Every record, answer and number on screen is real Candor data or output.
 
-## Recording the voice clip (about 60 seconds)
+| Time | Scene | Shows |
+|---|---|---|
+| 0 to 7 | Hook | "When is the launch?" Three real messages that disagree (Sep 30, Oct 14, Oct 21) |
+| 7 to 14 | Reveal | Candor, and what it remembers: 889 meeting segments, 230 Slack messages, 58 emails… |
+| 14 to 32 | Time travel | An as-of playhead over Sep 8 to Sep 18: September 30, then October 14, then October 21, with source ids; later records dim as "not written yet" |
+| 32 to 44 | Who said what | Dana's second-hand report against John's first-hand decision on dark mode |
+| 44 to 57 | What it won't say | "I don't know" (Dana's salary), the planted instruction ignored (Acme not signed), the pasted key redacted and gone after deletion |
+| 57 to 68 | Actions | The reminder lands at 8:00, not the 7:30 run-through; the delete asks for confirmation |
+| 68 to 75 | Proof | 96% retrieval, 100% answers (rules), 89% (LLM judge), 12/12 actions, ₹0; then "Now, live" |
 
-1. Terminal: font size 18 pt or larger, one window, `cd ~/code/candor`.
-2. Run `make voice` once before recording and allow microphone access when macOS asks; press Ctrl-D.
-3. QuickTime Player > File > New Screen Recording. In Options pick the MacBook microphone so your voice is recorded too. Record the terminal window.
-4. Run `make voice`. For each line: press Enter, speak, press Enter. Wait for the spoken reply before the next one.
-   - "What's our launch date again?" It answers October 21 with sources and says it aloud.
-   - "Delete all my emails from Marcus." It asks "Are you sure?" Say "Yes". It records the request and deletes nothing.
-   - Optional: "Message Sarah on Slack that the geocoding fix looks good", then "Yes": a dry run, nothing sent.
-5. Ctrl-D, stop the recording, save it as `~/Movies/voice-clip.mov`.
-6. `docs/video/build.sh ~/Movies/voice-clip.mov`
+## Part 2: the voice clip (about 60 seconds)
+
+1. Terminal: font 18 pt or larger, one window, `cd ~/code/candor`.
+2. Run `make voice` once and allow microphone access when macOS asks; Ctrl-D.
+3. QuickTime Player, then File, then New Screen Recording. In Options choose the MacBook microphone. Record the terminal window.
+4. `make voice`. For each line: press Enter, speak, press Enter, and wait for the spoken reply.
+   - "What's our launch date again?" It answers October 21 with sources, out loud.
+   - "Delete all my emails from Marcus." It asks "Are you sure?" Say "Yes": recorded, nothing deleted.
+   - Optional: "Message Sarah on Slack that the geocoding fix looks good", then "Yes": a dry run.
+5. Ctrl-D, stop recording, save as `~/Movies/voice-clip.mov`, run the command at the top.
 
 Upload `~/Movies/candor-demo.mp4` to YouTube (unlisted) or Google Drive (anyone with the link) and put the link in the reply email.

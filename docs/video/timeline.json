@@ -1,0 +1,121 @@
+[
+ {
+  "id": "MTG-0908-PLAN#0069",
+  "t": "2026-09-08T10:17:13.400000-07:00",
+  "src": "meeting",
+  "who": "John Okafor",
+  "ctx": "Route Planner v2 \u2013 launch planning"
+ },
+ {
+  "id": "MTG-0908-PLAN#0140",
+  "t": "2026-09-08T10:30:33.400000-07:00",
+  "src": "meeting",
+  "who": "Alex Rivera",
+  "ctx": "Route Planner v2 \u2013 launch planning"
+ },
+ {
+  "id": "EM-F-004",
+  "t": "2026-09-08T11:20:05-07:00",
+  "src": "gmail",
+  "who": "Linear",
+  "ctx": "Email: Route Planner v2: target date set"
+ },
+ {
+  "id": "EM-F-009",
+  "t": "2026-09-09T08:15:09-07:00",
+  "src": "gmail",
+  "who": "Alex Rivera",
+  "ctx": "Email: Re: Pinecrest renewal + Route Pla"
+ },
+ {
+  "id": "SL-F-0011",
+  "t": "2026-09-08T11:12:26-07:00",
+  "src": "slack",
+  "who": "Sarah Kim",
+  "ctx": "Slack #route-planner"
+ },
+ {
+  "id": "SL-RP-0910-2",
+  "t": "2026-09-10T09:55:02-07:00",
+  "src": "slack",
+  "who": "Alex Rivera",
+  "ctx": "Slack #route-planner"
+ },
+ {
+  "id": "SL-F-0062",
+  "t": "2026-09-10T10:40:02-07:00",
+  "src": "slack",
+  "who": "Linear",
+  "ctx": "Slack #route-planner"
+ },
+ {
+  "id": "SL-F-0063",
+  "t": "2026-09-10T10:45:30-07:00",
+  "src": "slack",
+  "who": "Alex Rivera",
+  "ctx": "Slack #sales"
+ },
+ {
+  "id": "EM-F-015",
+  "t": "2026-09-10T10:31:26-07:00",
+  "src": "gmail",
+  "who": "Linear",
+  "ctx": "Email: Route Planner v2: target date cha"
+ },
+ {
+  "id": "SL-F-0159",
+  "t": "2026-09-16T15:55:21-07:00",
+  "src": "slack",
+  "who": "Sarah Kim",
+  "ctx": "Slack #route-planner"
+ },
+ {
+  "id": "SL-F-0161",
+  "t": "2026-09-16T16:10:08-07:00",
+  "src": "slack",
+  "who": "Linear",
+  "ctx": "Slack #route-planner"
+ },
+ {
+  "id": "SL-F-0164",
+  "t": "2026-09-16T16:30:11-07:00",
+  "src": "slack",
+  "who": "John Okafor",
+  "ctx": "Slack #general"
+ },
+ {
+  "id": "SL-F-0166",
+  "t": "2026-09-16T16:45:52-07:00",
+  "src": "slack",
+  "who": "Alex Rivera",
+  "ctx": "Slack #sales"
+ },
+ {
+  "id": "MTG-0916-GONOGO#0077",
+  "t": "2026-09-16T15:16:44.200000-07:00",
+  "src": "meeting",
+  "who": "John Okafor",
+  "ctx": "Route Planner v2 \u2013 go/no-go"
+ },
+ {
+  "id": "EM-F-036",
+  "t": "2026-09-16T16:02:51-07:00",
+  "src": "gmail",
+  "who": "Linear",
+  "ctx": "Email: Route Planner v2: target date cha"
+ },
+ {
+  "id": "EM-F-039",
+  "t": "2026-09-17T08:10:26-07:00",
+  "src": "gmail",
+  "who": "Alex Rivera",
+  "ctx": "Email: Re: Pinecrest renewal + Route Pla"
+ },
+ {
+  "id": "DCT-0917-06",
+  "t": "2026-09-17T21:30:14-07:00",
+  "src": "dictation",
+  "who": "Alex Rivera",
+  "ctx": "Dictation (dictation) into Apple Notes: "
+ }
+]

@@ -1,0 +1,1 @@
+Ask Candor when the launch is and it asks you back: as of when? It remembers two weeks of one VP's meetings, Slack, email and calendar, answers as of any moment, keeps first-hand and second-hand apart, and says "I don't know" when it should. 96% retrieval, 12/12 actions, ₹0.
