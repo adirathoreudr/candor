@@ -6,7 +6,7 @@ RESULTS   := results/$(shell git describe --always --dirty 2>/dev/null || echo n
 # nice: keep the laptop responsive while embeddings build
 PY        := PYTHONPATH=src nice -n 10 uv run --frozen python
 
-.PHONY: all run act eval eval-actions dev dev-actions ask assistant voice test setup check-uv
+.PHONY: all run act eval eval-actions dev dev-actions ask do assistant voice test setup check-uv
 
 ## Everything the hidden test needs: memory answers and action predictions
 all: run act
@@ -40,12 +40,16 @@ eval-actions: act
 ask: setup
 	@$(PY) -m candor.cli ask "$(Q)" $(if $(AS_OF),--as-of $(AS_OF))
 
+## One command, dry run: make do C="Move board deck prep to 3pm" AS_OF=2026-09-17T12:00:00-07:00
+do: setup
+	@$(PY) -m candor.cli do "$(C)" --as-of $(or $(AS_OF),2026-09-18T18:00:00-07:00)
+
 ## Interactive assistant: text REPL, or push-to-talk voice. Dry run unless EXECUTE=1 (sandbox outbox/ only)
 assistant: setup
-	@$(PY) -m candor.cli assistant $(if $(EXECUTE),--execute)
+	@$(PY) -m candor.cli assistant $(if $(EXECUTE),--execute) $(if $(AS_OF),--as-of $(AS_OF))
 
 voice: setup
-	@$(PY) -m candor.cli assistant --voice $(if $(EXECUTE),--execute)
+	@$(PY) -m candor.cli assistant --voice $(if $(EXECUTE),--execute) $(if $(AS_OF),--as-of $(AS_OF))
 
 ## Hidden-style action dev set, scored with the provided harness
 dev-actions: setup
