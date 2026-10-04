@@ -11,9 +11,5 @@ __pycache__/
 .next/
 .cache/
 *.log
-.claude/settings.local.json
-Candor-Takehome.zip
 results/
 outbox/
-brag-output*/
-docs/video/build.html

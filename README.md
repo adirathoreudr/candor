@@ -138,7 +138,7 @@ The free tier makes live runs slow. Answers for 27 new questions take about 20 t
 
 Voice is macOS-only. ffmpeg records from the microphone, chosen by name because the first audio device on many Macs is a virtual one (BlackHole here). Groq's `whisper-large-v3-turbo` transcribes (a synthesized train command came back word for word in 0.5 seconds, measured), and macOS `say` speaks the reply. The first run asks for microphone permission.
 
-A demo walkthrough is in [docs/demo-script.md](docs/demo-script.md).
+Demo video (2:40): [watch on Google Drive](https://drive.google.com/file/d/1w-vrWR_tXMEbHEJUhLzD1-v9CMIfXas7/view?usp=sharing). A 75-second walkthrough of real answers, then two live voice sessions recorded through the MacBook microphone.
 
 ## Tools and models
 
