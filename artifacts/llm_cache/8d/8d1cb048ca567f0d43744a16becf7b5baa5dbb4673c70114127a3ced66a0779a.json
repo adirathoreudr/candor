@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"I chose Postgres with the PostGIS extension. I needed spatial queries\u2014nearest\u2011depot lookups and routes within a few miles\u2014and PostGIS offers geography columns, GiST indexes and fast indexed nearest\u2011neighbor queries, matching a real\u2011service setup.\", \"sources\": [\"MTG-0917-RECRUIT#0014\",\"CDX-0912\"], \"abstained\": false}"
+}

@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Speaker\u202f4, an unidentified participant, said Acme's fiscal year ends in November.\", \"sources\": [\"MTG-0909-ACME#0120\"], \"abstained\": false}"
+}

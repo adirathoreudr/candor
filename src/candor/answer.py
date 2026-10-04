@@ -5,7 +5,7 @@ from candor import config
 from candor.ingest import ASSISTANT, BOT, UNIDENTIFIED, Unit
 from candor.llm import LLM
 
-PROMPT_VERSION = "answer.v2"
+PROMPT_VERSION = "answer.v3"
 MAX_CHARS = {"codex": 2500}
 DEFAULT_MAX_CHARS = 1200
 

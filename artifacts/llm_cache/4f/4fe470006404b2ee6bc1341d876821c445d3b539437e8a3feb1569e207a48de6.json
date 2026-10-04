@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"Route Planner v2 is launching on October 14.\", \"sources\": [\"SL-F-0063\", \"EM-F-015\", \"SL-F-0062\"], \"abstained\": false}"
+}

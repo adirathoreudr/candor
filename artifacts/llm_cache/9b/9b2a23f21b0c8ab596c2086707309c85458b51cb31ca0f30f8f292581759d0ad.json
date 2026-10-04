@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"The launch slipped because QA found a geocoding regression on Canada/Mexico addresses, so the release was delayed to address that issue.\", \"sources\": [\"CGPT-0913-BOARD#m3\"], \"abstained\": false}"
+}
