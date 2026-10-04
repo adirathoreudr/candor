@@ -39,6 +39,15 @@ def test_ambiguous_email_recipient_becomes_clarify(directory, events):
     assert "Sarah Kim" in action["args"]["question"] and "Sarah Patel" in action["args"]["question"]
 
 
+def test_invented_addresses_become_clarify_unless_spelled_out(directory, events):
+    raw = {"type": "calendar.create_event", "args": {"title": "t", "start": "2026-09-18T11:00",
+                                                       "attendees": ["pri...@brightline.example.com"]}}
+    assert normalize([raw], directory, events, "Schedule with Priya", WED)[0]["type"] == "clarify"
+    new = {"type": "gmail.send", "args": {"to": ["new.person@corp.example.com"], "subject": "s", "body": "b"}}
+    out = normalize([new], directory, events, "Email new.person@corp.example.com hello", WED)[0]
+    assert out["type"] == "gmail.send" and out["args"]["to"] == ["new.person@corp.example.com"]
+
+
 def test_email_names_resolve_and_lists_are_lists(directory, events):
     args = one({"type": "gmail.send", "args": {"to": "John Okafor", "subject": "s", "body": "b"}}, directory, events)["args"]
     assert args["to"] == ["john@brightline.example.com"] and args["cc"] == []

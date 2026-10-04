@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-20b",
+ "reply": "{\"queries\":[\"Dana dark mode decision\",\"Dana dark mode September 16\",\"Dana dark mode Slack\"],\"date_from\":\"2026-09-16\",\"date_to\":\"2026-09-16\",\"followup\":\"\"}"
+}

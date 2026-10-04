@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"actions\": [{\"type\": \"memory.ask\", \"args\": {\"question\": \"What is that, an on speed again?\"}}]}"
+}

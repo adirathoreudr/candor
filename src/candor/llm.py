@@ -25,8 +25,16 @@ from candor import config
 MAX_RETRY_WAIT = 120   # seconds; a provider asking us to wait longer is out of quota, not briefly busy
 
 
-class LLMUnavailable(RuntimeError):
-    """No usable backend is configured. Raised once, with a message a human can act on."""
+class LLMError(RuntimeError):
+    """The model gave no usable reply for this request (after retries). Callers can fall back per item."""
+
+
+class LLMUnavailable(LLMError):
+    """No usable backend: missing key or exhausted quota. Raised once, with a message a human can act on."""
+
+
+class _Truncated(Exception):
+    """Empty content because the model spent the whole token budget (finish_reason=length)."""
 
 
 @dataclass
@@ -107,14 +115,24 @@ class LLM:
             # One repair attempt with the bad reply shown; a different prompt means a different cache key.
             fixed = self.complete(system, user + "\n\nYour previous reply was not valid JSON:\n" + reply[:2000] +
                                   "\n\nReply again with only the JSON object.")
-            return parse_json(fixed)
+            try:
+                return parse_json(fixed)
+            except ValueError as e:
+                raise LLMError(f"{self.model}: reply was not valid JSON after one repair") from e
 
     def _call(self, system: str, user: str) -> str:
+        budget = self.max_tokens
         for attempt in range(self.retries):
             try:
                 if self.backend == "claude-cli":
                     return self._claude_cli(system, user)
-                return self._openai(system, user)
+                return self._openai(system, user, budget)
+            except _Truncated as e:
+                # Same request again would truncate again (temperature 0): retry once with double the budget.
+                if budget > self.max_tokens:
+                    raise LLMError(f"{self.model}: no reply within {budget} tokens") from e
+                budget *= 2
+                continue
             except (urllib.error.URLError, TimeoutError, subprocess.TimeoutExpired, RuntimeError) as e:
                 if isinstance(e, urllib.error.HTTPError) and e.code == 429:
                     detail = e.read().decode(errors="replace")
@@ -131,16 +149,16 @@ class LLM:
                 retryable = not isinstance(e, urllib.error.HTTPError) or e.code in (408, 409, 425, 429, 500, 502, 503, 504)
                 if not retryable or attempt == self.retries - 1:
                     self.usage.failures.append(str(e)[:200])
-                    raise
+                    raise LLMError(f"{self.model}: {type(e).__name__} {str(e)[:160]}") from e
                 wait = 2 ** attempt * 3
                 if isinstance(e, urllib.error.HTTPError) and e.headers.get("retry-after", "").replace(".", "").isdigit():
                     wait = max(wait, float(e.headers["retry-after"]) + 1)   # provider says exactly when
                 print(f"llm: {type(e).__name__} {str(e)[:80]}; retry in {wait}s", file=sys.stderr)
                 time.sleep(wait)
-        raise AssertionError("unreachable")
+        raise LLMError(f"{self.model}: no reply after {self.retries} attempts")
 
-    def _openai(self, system: str, user: str) -> str:
-        body = {"model": self.model, "temperature": 0, "max_tokens": self.max_tokens,
+    def _openai(self, system: str, user: str, max_tokens: int | None = None) -> str:
+        body = {"model": self.model, "temperature": 0, "max_tokens": max_tokens or self.max_tokens,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
         req = urllib.request.Request(f"{config.LLM_BASE_URL}/chat/completions", data=json.dumps(body).encode(),
                                      # Explicit User-Agent: some providers' edge (Groq's Cloudflare, error 1010)
@@ -155,6 +173,8 @@ class LLM:
         self.usage.prompt_tokens += usage.get("prompt_tokens") or 0
         self.usage.completion_tokens += usage.get("completion_tokens") or 0
         content = out["choices"][0]["message"].get("content")
+        if not content and out["choices"][0].get("finish_reason") == "length":
+            raise _Truncated()
         if not content:
             raise RuntimeError(f"empty completion (finish_reason={out['choices'][0].get('finish_reason')})")
         return content

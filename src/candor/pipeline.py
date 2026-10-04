@@ -13,7 +13,7 @@ from candor import config, ingest, people
 from candor.actions import Directory, plan_actions
 from candor.answer import write_answer
 from candor.index import Index
-from candor.llm import LLM, LLMUnavailable
+from candor.llm import LLM, LLMError, LLMUnavailable
 from candor.retrieve import FOLLOWUP_EVIDENCE, expand, make_followup, make_plan, rerank, search
 from candor.store import Memory
 
@@ -44,7 +44,7 @@ class Candor:
             print(f"WARNING: {e}. Cached LLM calls still replay; anything else falls back per question "
                   f"(search on the question alone, answers abstain).", file=sys.stderr)
 
-    def _fallback(self, stage: str, error: LLMUnavailable) -> None:
+    def _fallback(self, stage: str, error: LLMError) -> None:
         self.degraded[stage] = str(error)
         self.degraded_count += 1
 
@@ -59,14 +59,14 @@ class Candor:
                     first = search(self.index, question, as_of, plans)[:FOLLOWUP_EVIDENCE]
                     evidence = [self.memory.unit_at(uid, as_of) for uid in first]
                     plans.append(make_followup(self.llm_plan, owner, question, as_of, plan, evidence))
-            except LLMUnavailable as e:
+            except LLMError as e:
                 self._fallback("plan", e)
         ranked = search(self.index, question, as_of, plans)
         if USE_RERANK:
             at = lambda ids: [self.memory.unit_at(u, as_of) for u in ids]   # noqa: E731
             try:
                 ranked = rerank(self.llm_rerank, owner, question, as_of, at(ranked), at(expand(self.index, as_of, ranked)))
-            except LLMUnavailable as e:
+            except LLMError as e:
                 self._fallback("rerank", e)
         ranked = ranked[:RETRIEVE_K]
         self.memory.assert_visible(ranked, as_of)
@@ -77,7 +77,7 @@ class Candor:
         evidence = [self.memory.unit_at(uid, as_of) for uid in ranked[:EVIDENCE_K]]
         try:
             result = write_answer(self.llm, self.corpus.owner, question, as_of, evidence)
-        except LLMUnavailable as e:
+        except LLMError as e:
             self._fallback("answer", e)
             result = {"answer": NO_ANSWER, "sources": [], "abstained": True}
         self.memory.assert_visible(result["sources"], as_of)
@@ -90,8 +90,16 @@ class Candor:
         return max(u.time for u in self.corpus.units if u.source != "calendar")
 
     def act(self, command: str, as_of: datetime) -> list[dict]:
-        """Dry run: the actions the command would take. Needs an LLM (or a cached plan); fails loud without."""
-        return plan_actions(self.llm_act, self.memory, self.index, self.directory, self.people, command, as_of)
+        """Dry run: the actions the command would take. A missing key or exhausted quota stops loudly
+        (every command would fail); a bad reply for one command becomes a clarify for that command."""
+        try:
+            return plan_actions(self.llm_act, self.memory, self.index, self.directory, self.people, command, as_of)
+        except LLMUnavailable:
+            raise
+        except LLMError as e:
+            self._fallback("act", e)
+            return [{"type": "clarify", "args": {"question": f"I couldn't work out what to do with \"{command}\". "
+                                                             "Can you rephrase it?"}}]
 
     def report(self) -> str:
         """Usage per role, plus any per-question fallbacks (empty string when nothing fell back)."""

@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\"answer\": \"No. The Harbor demo scheduled for September 14 was cancelled and pushed to October, as the calendar shows a cancelled status and both Marcus and Alex confirmed the shift.\", \"sources\": [\"CAL-HARBOR-DEMO\",\"SL-DM-AM-0911-1\"], \"abstained\": false}"
+}

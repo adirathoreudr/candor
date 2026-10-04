@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 
 from candor.io import read_jsonl, write_jsonl
-from candor.llm import LLMUnavailable
+from candor.llm import LLMError, LLMUnavailable
 from candor.pipeline import Candor
 
 
@@ -52,12 +52,14 @@ def cmd_assistant(args: argparse.Namespace) -> None:
     if args.voice:
         from candor import voice
         device, name = voice.microphone()
+        words = voice.vocabulary([p.name for p in candor.people] + [c["name"] for c in candor.corpus.channels
+                                                                      if not c.get("is_dm")] + [candor.corpus.owner])
         print(f"Microphone: {name}")
     while True:
         try:
             if args.voice:
                 input("\nPress Enter and speak ")
-                text = voice.listen(device)
+                text = voice.listen(device, words)
                 print(f"you> {text}")
             else:
                 text = input("\nyou> ")
@@ -68,7 +70,7 @@ def cmd_assistant(args: argparse.Namespace) -> None:
             continue
         try:
             reply = bot.handle(text, as_of)
-        except LLMUnavailable as e:   # quota or key: say so and keep the session alive
+        except LLMError as e:   # quota, key or a bad model reply: say so and keep the session alive
             print(f"candor> I can't reach the language model right now: {e}")
             continue
         print(f"candor> {reply.text}")
@@ -119,7 +121,7 @@ def main() -> None:
     args = p.parse_args()
     try:
         args.func(args)
-    except LLMUnavailable as e:   # missing key or exhausted quota: one clear line, not a traceback
+    except LLMError as e:   # missing key, exhausted quota, unusable reply: one clear line, not a traceback
         print(f"candor: {e}", file=sys.stderr)
         sys.exit(2)
 

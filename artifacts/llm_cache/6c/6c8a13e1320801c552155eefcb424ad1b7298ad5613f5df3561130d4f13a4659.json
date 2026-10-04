@@ -1,0 +1,5 @@
+{
+ "backend": "openai",
+ "model": "openai/gpt-oss-120b",
+ "reply": "{\n  \"actions\": [\n    {\n      \"type\": \"memory.ask\",\n      \"args\": {\n        \"question\": \"What is the launch date for Route Planner v2?\"\n      }\n    }\n  ]\n}"
+}
