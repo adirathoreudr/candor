@@ -18,6 +18,14 @@ Eval log (measured, train set, `make eval`, judge none unless noted) and failure
 | P4 | + reranker (rerank.v1) | 96.0% | | MRR 0.900; top-5 92%; 0 forbidden |
 | P4 | + answer.v2 | 96.0% | 96.3% | source precision 0.951; 0 hard failures; answer model 46.8K prompt tokens |
 
+### Official-style judge (P7)
+
+`score_memory.py --judge claude-cli --model sonnet` on the P4 answers: strict 87.0% (95% CI 72 to 97%), 0 hard failures, 0 unverified. Rules alone: 96.3%. Marked down for missing detail: TR-04 (extension), TR-07 (says mockups still being refined), TR-08 (Dana's report), TR-09 (attribution of the condition), TR-10 (ARR figure, liability reason).
+
+### Reproducibility (P7)
+
+Fresh clone, no `.env`, no key, empty model cache: `make all` in 2 min 16 s (embedding model download included); `outputs/train/memory_answers.jsonl` and `action_predictions.jsonl` byte-identical to the committed files; 0 live LLM calls, all from the committed cache.
+
 ### Actions (dry run)
 
 | Commit | Change | Train actions | Dev actions (hidden-style) | Notes |

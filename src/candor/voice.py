@@ -17,7 +17,7 @@ from pathlib import Path
 from candor import config
 from candor.llm import LLMUnavailable
 
-STT_MODEL = os.environ.get("CANDOR_STT_MODEL", "whisper-large-v3-turbo")
+STT_MODEL = os.environ.get("CANDOR_STT_MODEL") or "whisper-large-v3-turbo"   # empty in .env means default
 _DEVICE_RE = re.compile(r"\[(\d+)\] (.+)$")
 
 
